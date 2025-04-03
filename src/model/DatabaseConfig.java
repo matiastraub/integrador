@@ -1,4 +1,4 @@
-package com.dam.model;
+package model;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -11,7 +11,9 @@ public class DatabaseConfig {
 	private String pass;
 	private String user;
 	private int port;
-	private final String PATH = "src/com/dam/model/db.properties";
+	private String url;
+
+	private final String PATH = "src/db.properties";
 
 	public DatabaseConfig() {
 		Properties prop = new Properties();
@@ -22,9 +24,16 @@ public class DatabaseConfig {
 			pass = prop.getProperty("PASS");
 			user = prop.getProperty("USER");
 			port = Integer.parseInt(prop.getProperty("PORT"));
+			url = prop.getProperty("URL");
 		} catch (IOException e) {
-			e.printStackTrace();
+			System.out.println("Error al cargar el archivo de propiedades: " + e.getMessage());
+		} catch (NumberFormatException e) {
+			System.out.println("Error al convertir el puerto a entero: " + e.getMessage());
 		}
+	}
+
+	public String getUrl() {
+		return url;
 	}
 
 	public String getDatabase() {

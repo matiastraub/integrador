@@ -1,4 +1,4 @@
-package com.dam.controller;
+package controller;
 
 import java.util.regex.Pattern;
 

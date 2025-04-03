@@ -1,8 +1,9 @@
-package com.dam.view;
-
-import com.dam.controller.UsuarioValidacion;
+package view;
 
 import javax.swing.*;
+
+import controller.UsuarioValidacion;
+
 import java.awt.*;
 import java.awt.event.ActionEvent;
 
