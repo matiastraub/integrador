@@ -1,4 +1,17 @@
 #General
+.classpath
+.project
+
+#VsCode
+.settings/
+
+
 
 #Ignorar archivos bin
 /bin
+
+#Ignorar variables de entorno
+/src/db.properties
+
+#Ignorar librerias
+/libs
