@@ -1,40 +1,22 @@
-package com.dam.backend.main;
+package main;
 
-import com.dam.model.DatabaseConfig;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import model.DatabaseConfig;
 
 public class Main {
-	private static String host;
-	private static int port;
-	private static String database;
-	private static String user;
-	private static String pass;
-
-	private static void getDatabase() {
-		DatabaseConfig db = new DatabaseConfig();
-		host = db.getHost();
-		port = db.getPort();
-		database = db.getDatabase();
-		user = db.getUser();
-		pass = db.getPass();
-	}
 
 	public static void main(String[] args) {
 		try {
-			getDatabase();
-			// TODO: Cambiar base de datos a Sqlite
-			Class.forName("com.mysql.cj.jdbc.Driver");
-			try (Connection connection = DriverManager.getConnection(
-					"jdbc:mysql://" + host + ":" + port + "/" + database,
-					user, pass);
+			// TODO: Testing database connection
+			DatabaseConfig db = new DatabaseConfig();
+			Class.forName("org.sqlite.JDBC");
+			try (Connection connection = DriverManager.getConnection("jdbc:sqlite:" + db.getUrl());
 					Statement statement = connection.createStatement();
-					// TODO: Ejemplo de conexión a base de datos
-					ResultSet resultSet = statement.executeQuery("SELECT * FROM Usuario order by nombre asc;")) {
-
+					ResultSet resultSet = statement.executeQuery("SELECT * FROM usuario order by nombre asc;")) {
 				int code;
 				String lastname;
 				String name;
