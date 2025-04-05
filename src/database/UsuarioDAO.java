@@ -18,7 +18,8 @@ public class UsuarioDAO {
     }
 
     // Insertar Usuario
-    public static void insertUsuario(Usuario user) {
+    public static int crearUsuario(Usuario user) {
+        int resp = -1;
         String sql = "INSERT INTO usuario (nombre, apellido,telefono, fechaNac,password,email) VALUES (?, ?, ?, ?, ?, ?)";
         try (Connection conn = DatabaseManager.connect(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, user.getNombre());
@@ -27,11 +28,41 @@ public class UsuarioDAO {
             pstmt.setString(4, user.getFechaNac());
             pstmt.setString(5, user.getPassword());
             pstmt.setString(6, user.getEmail());
-            pstmt.executeUpdate();
+            resp = pstmt.executeUpdate();
             System.out.println("Usuario añadido con éxito!");
         } catch (SQLException e) {
             System.out.println("Error de inserción: " + e.getMessage());
         }
+        return resp;
+    }
+
+    public static boolean checkUsuarioValido(String email) {
+        String sql = "SELECT * FROM usuario WHERE email = ?";
+        try (Connection conn = DatabaseManager.connect(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, email);
+            ResultSet rs = pstmt.executeQuery();
+            if (rs.next()) {
+                return true; // Usuario válido
+            }
+        } catch (SQLException e) {
+            System.out.println("Error de validación: " + e.getMessage());
+        }
+        return false; // Usuario no válido
+    }
+
+    public static boolean checkLogin(String email, String password) {
+        String sql = "SELECT * FROM usuario WHERE email = ? AND password = ?";
+        try (Connection conn = DatabaseManager.connect(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, email);
+            pstmt.setString(2, password);
+            ResultSet rs = pstmt.executeQuery();
+            if (rs.next()) {
+                return true; // Usuario válido
+            }
+        } catch (SQLException e) {
+            System.out.println("Error de validación: " + e.getMessage());
+        }
+        return false; // Usuario no válido
     }
 
     // Obtener usuario por Id
@@ -42,7 +73,7 @@ public class UsuarioDAO {
             pstmt.setInt(1, id);
             ResultSet rs = pstmt.executeQuery();
             if (rs.next()) {
-                usuario = new Usuario(rs.getInt("id"), rs.getString("nombre"), rs.getString("apellido"),
+                usuario = new Usuario(rs.getString("nombre"), rs.getString("apellido"),
                         rs.getString("telefono"), rs.getString("fechaNac"), rs.getString("password"),
                         rs.getString("email"));
             } else {
@@ -64,7 +95,7 @@ public class UsuarioDAO {
                 ResultSet rs = stmt.executeQuery(sql)) {
             while (rs.next()) {
 
-                usuarios.add(new Usuario(rs.getInt("id"), rs.getString("nombre"), rs.getString("apellido"),
+                usuarios.add(new Usuario(rs.getString("nombre"), rs.getString("apellido"),
                         rs.getString("telefono"), rs.getString("fechaNac"), rs.getString("password"),
                         rs.getString("email")));
             }
