@@ -1,13 +1,22 @@
 package view;
 
-import javax.swing.*;
-
 import controller.UsuarioValidacion;
-
+import database.UsuarioDAO;
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import javax.swing.*;
 
 public class LoginView extends JFrame {
+
+    public static final String BTN_LOGIN = "Login";
+
+    private final JButton loginBtn;
+    private final JTextField usernameField;
+    private final JPasswordField passwordField;
+    private final JLabel signupLink;
+    private SignupView sv;
 
     public LoginView() {
         setTitle("Login");
@@ -26,63 +35,69 @@ public class LoginView extends JFrame {
         gbc.gridy = 0;
 
         // Usuario
-        mainPanel.add(new JLabel("Username:"), gbc);
+        mainPanel.add(new JLabel("Email:"), gbc);
         gbc.gridy++;
-        JTextField usernameField = new JTextField();
+        usernameField = new JTextField();
         mainPanel.add(usernameField, gbc);
         gbc.gridy++;
 
         // Contraseña
         mainPanel.add(new JLabel("Password:"), gbc);
         gbc.gridy++;
-        JPasswordField passwordField = new JPasswordField();
+        passwordField = new JPasswordField();
         mainPanel.add(passwordField, gbc);
         gbc.gridy++;
 
         // Botón de Login
-        JButton loginBtn = new JButton("Login");
+        loginBtn = new JButton(BTN_LOGIN);
         gbc.fill = GridBagConstraints.NONE;
         gbc.anchor = GridBagConstraints.CENTER;
         gbc.weightx = 0.0;
         mainPanel.add(loginBtn, gbc);
         gbc.gridy++;
 
+        loginBtn.addActionListener((ActionEvent e) -> {
+            login();
+        });
+
         // Enlace de registro
-        JLabel signupLink = new JLabel("New User? Sign in");
+        signupLink = new JLabel("Nuevo Usuario? Registrarse aquí");
         mainPanel.add(signupLink, gbc);
 
         add(mainPanel, BorderLayout.CENTER);
 
-        // Listeners
-        loginBtn.addActionListener((ActionEvent e) -> {
-            String user = usernameField.getText();
-            String pass = new String(passwordField.getPassword());
-
-            if (!UsuarioValidacion.esValidoNombre(user)) {
-                JOptionPane.showMessageDialog(this, "Nombre inválido.");
-                return;
-            }
-            if (!UsuarioValidacion.esValidoPassword(pass)) {
-                JOptionPane.showMessageDialog(this, "Contraseña inválida.");
-                return;
-            }
-
-            JOptionPane.showMessageDialog(this, "Login correcto (simulado).");
-        });
-
         signupLink.setForeground(Color.BLUE);
         signupLink.setCursor(new Cursor(Cursor.HAND_CURSOR));
-        signupLink.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                new SignupView();
+        signupLink.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent evt) {
+                sv = new SignupView();
+                sv.setVisible(true);
                 dispose();
             }
         });
 
-        setVisible(true);
     }
-  //Metodo main temporal para poder probar la ventana
-    public static void main(String[] args) {
-        new LoginView();
+
+    public void login() {
+        String user = usernameField.getText();
+        String pass = new String(passwordField.getPassword());
+        if (!UsuarioValidacion.esValidoEmail(user)) {
+            JOptionPane.showMessageDialog(this, "Email inválido.");
+            return;
+        }
+        if (!UsuarioValidacion.esValidoPassword(pass)) {
+            JOptionPane.showMessageDialog(this, "Contraseña inválida.");
+            return;
+        }
+        boolean esValido = UsuarioDAO.checkLogin(user, pass);
+        if (esValido) {
+            JOptionPane.showMessageDialog(this, "Login correcto.");
+            // Aquí puedes implementar la lógica de inicio de sesión
+            // Por ejemplo, abrir la ventana principal de la aplicación
+        } else {
+            JOptionPane.showMessageDialog(this, "Usuario o contraseña incorrectos.");
+        }
     }
+
 }
