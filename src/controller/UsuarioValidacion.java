@@ -8,7 +8,7 @@ public class UsuarioValidacion {
     private static final int MAX_STR = 30;
     private static final String STR_REGEX = "^[A-Za-z]{" + MIN_STR + "," + MAX_STR + "}$";
     private static final String EMAIL_REGEX = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$";
-    private static final String TEL_REGEX = "^\\d{10,15}$";
+    private static final String TEL_REGEX = "^\\d{9}$";
     private static final String PASSWORD_REGEX = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z]).{8,20}$";
 
     public static boolean esValidoNombre(String name) {
