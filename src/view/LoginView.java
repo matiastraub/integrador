@@ -7,6 +7,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import javax.swing.*;
+import model.Usuario;
 
 public class LoginView extends JFrame {
 
@@ -17,6 +18,7 @@ public class LoginView extends JFrame {
     private final JPasswordField passwordField;
     private final JLabel signupLink;
     private SignupView sv;
+    private MainView mainView;
 
     public LoginView() {
         setTitle("Login");
@@ -92,7 +94,10 @@ public class LoginView extends JFrame {
         }
         boolean esValido = UsuarioDAO.checkLogin(user, pass);
         if (esValido) {
-            JOptionPane.showMessageDialog(this, "Login correcto.");
+            dispose();
+            Usuario usuario = UsuarioDAO.getUsuarioEmail(user);
+            mainView = new MainView(usuario);
+            mainView.setVisible(true);
             // Aquí puedes implementar la lógica de inicio de sesión
             // Por ejemplo, abrir la ventana principal de la aplicación
         } else {
