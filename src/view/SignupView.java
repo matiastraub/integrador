@@ -24,6 +24,7 @@ public class SignupView extends JFrame {
             new JTextField(), new JPasswordField(), new JPasswordField()
     };
     private final JLabel signupLink;
+    MainView mainView;
     private LoginView lv;
 
     public static final String BTN_REGISTRAR = "Register";
@@ -203,14 +204,13 @@ public class SignupView extends JFrame {
             Usuario usuario = new Usuario(nombre, apellido, tel, fechaNac, pass, email);
             int result = UsuarioDAO.crearUsuario(usuario);
             if (result == 1) {
-                JOptionPane.showMessageDialog(this, "Usuario creado con éxito.");
+                dispose();
+                mainView = new MainView(usuario);
+                mainView.setVisible(true);
             } else {
                 JOptionPane.showMessageDialog(this, "Error al crear usuario.");
-
             }
         }
-        // dispose();
-
     }
 
 }

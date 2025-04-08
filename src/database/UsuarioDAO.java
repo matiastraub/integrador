@@ -65,6 +65,26 @@ public class UsuarioDAO {
         return false; // Usuario no válido
     }
 
+    public static Usuario getUsuarioEmail(String email) {
+        String sql = "SELECT * FROM usuario WHERE email = ?";
+        Usuario usuario = null;
+        try (Connection conn = DatabaseManager.connect(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, email);
+            ResultSet rs = pstmt.executeQuery();
+            if (rs.next()) {
+                usuario = new Usuario(rs.getString("nombre"), rs.getString("apellido"),
+                        rs.getString("telefono"), rs.getString("fechaNac"), rs.getString("password"),
+                        rs.getString("email"));
+            } else {
+                System.out.println("Usuario no encontrado");
+            }
+        } catch (SQLException e) {
+            System.out.println("Fetch error: " + e.getMessage());
+
+        }
+        return usuario;
+    }
+
     // Obtener usuario por Id
     public static Usuario getUsuario(int id) {
         String sql = "SELECT * FROM usuario WHERE id = ?";
@@ -81,7 +101,6 @@ public class UsuarioDAO {
             }
         } catch (SQLException e) {
             System.out.println("Fetch error: " + e.getMessage());
-
         }
         return usuario;
     }
