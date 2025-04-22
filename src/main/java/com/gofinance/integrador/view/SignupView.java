@@ -1,7 +1,9 @@
 package com.gofinance.integrador.view;
+
 import com.gofinance.integrador.controller.UsuarioValidacion;
 import com.gofinance.integrador.database.UsuarioDAO;
 import com.gofinance.integrador.model.Usuario;
+import raven.datetime.DatePicker;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
@@ -9,6 +11,8 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 @SuppressWarnings("serial")
 public class SignupView extends JFrame {
@@ -18,18 +22,20 @@ public class SignupView extends JFrame {
     private final JTextField apellidoField;
     private final JTextField emailField;
     private final JTextField telField;
-    private final JTextField fechaNacField;
+    private JTextField fechaNacField; // No es final y lo inicializamos correctamente
     private final JPasswordField passField;
     private final JPasswordField repeatPassField;
     private final JLabel loginLink;
     private MainView mainView;
     private LoginView lv;
+    private DatePicker datePicker; // DatePicker para la fecha de nacimiento
+    private JButton selectDateBtn; // Botón para abrir el DatePicker
 
     public static final String BTN_REGISTRAR = "Registrar";
 
     public SignupView() {
         setTitle("Registro");
-        setSize(400, 620);
+        setSize(400, 660);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
 
@@ -54,9 +60,36 @@ public class SignupView extends JFrame {
         telField = new JTextField();
         mainPanel.add(telField, "span 2, growx");
 
+        // Fecha de Nac. (Usando DatePicker en lugar de JTextField)
         mainPanel.add(new JLabel("Fecha de Nac. (YYYY-MM-DD):"), "span 2");
+
+        // Inicializamos el campo fechaNacField
         fechaNacField = new JTextField();
+        fechaNacField.setEditable(false); // Solo lectura
+
+        // Crear botón para abrir el DatePicker
+        selectDateBtn = new JButton("Seleccionar Fecha");
+        selectDateBtn.addActionListener(e -> abrirDatePicker());
+
+        // Configurar el DatePicker
+        datePicker = new DatePicker();
+        datePicker.setDateSelectionAble(date -> !date.isAfter(LocalDate.now())); // Solo permitir fechas hasta hoy
+        datePicker.addDateSelectionListener(dateEvent -> {
+            DateTimeFormatter df = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+            LocalDate selectedDate = datePicker.getSelectedDate();
+            if (selectedDate != null) {
+                fechaNacField.setText(df.format(selectedDate)); // Establecer la fecha seleccionada en el campo de texto
+            }
+        });
+        datePicker.now();
+
+        // Crear editor de texto para mostrar la fecha seleccionada
+        JFormattedTextField editor = new JFormattedTextField();
+        datePicker.setEditor(editor);
+
+        // Agregar los componentes al panel
         mainPanel.add(fechaNacField, "span 2, growx");
+        mainPanel.add(selectDateBtn, "span 2, growx");
 
         mainPanel.add(new JLabel("Contraseña:"), "span 2");
         passField = new JPasswordField();
@@ -91,12 +124,17 @@ public class SignupView extends JFrame {
         setResizable(false);
     }
 
+    private void abrirDatePicker() {
+        // Mostrar el DatePicker en un JDialog al hacer clic en el botón
+        JOptionPane.showMessageDialog(this, datePicker, "Selecciona tu fecha de nacimiento", JOptionPane.PLAIN_MESSAGE);
+    }
+
     public void registrar() {
         String nombre = nombreField.getText();
         String apellido = apellidoField.getText();
         String email = emailField.getText();
         String tel = telField.getText();
-        String fechaNac = fechaNacField.getText();
+        String fechaNac = fechaNacField.getText(); // Obtener la fecha seleccionada
         String pass = new String(passField.getPassword());
         String repeatPass = new String(repeatPassField.getPassword());
 
@@ -153,3 +191,4 @@ public class SignupView extends JFrame {
         return true;
     }
 }
+
