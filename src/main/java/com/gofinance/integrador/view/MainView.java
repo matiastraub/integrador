@@ -1,8 +1,19 @@
 package com.gofinance.integrador.view;
-import net.miginfocom.swing.MigLayout;
+
+import java.awt.BorderLayout;
+import java.awt.CardLayout;
+import java.awt.Dimension;
+
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.SwingConstants;
+import javax.swing.UIManager;
+
 import com.gofinance.integrador.model.Usuario;
-import javax.swing.*;
-import java.awt.*;
+
+import net.miginfocom.swing.MigLayout;
 
 @SuppressWarnings("serial")
 public class MainView extends JFrame {
@@ -25,7 +36,7 @@ public class MainView extends JFrame {
         this.usuario = usuario;
 
         setTitle("Dashboard");
-        setSize(800, 600);
+        setSize(1000, 600);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         setLayout(new BorderLayout());
@@ -39,13 +50,13 @@ public class MainView extends JFrame {
         String correo = usuario.getEmail();
 
         // Panel lateral
-        sidePanel = new JPanel(new MigLayout("wrap 1", "[grow, fill]", "[]20[]5[]20[]5[]5[]5[]5[]5[]push"));
+        sidePanel = new JPanel(new MigLayout("wrap 1", "[grow, fill]", "[]20[]5[]20[]5[]5[]5[]5[]5[]5[]push"));
         sidePanel.setPreferredSize(new Dimension(200, getHeight()));
 
-        JLabel profilePic = new JLabel(); // Placeholder para imagen
+        JLabel profilePic = new JLabel();
         profilePic.setPreferredSize(new Dimension(64, 64));
         profilePic.setHorizontalAlignment(SwingConstants.CENTER);
-        profilePic.setIcon(UIManager.getIcon("OptionPane.informationIcon")); // Temporal
+        profilePic.setIcon(UIManager.getIcon("OptionPane.informationIcon"));
 
         userName = new JLabel(nombreCompleto, SwingConstants.CENTER);
         userEmail = new JLabel(correo, SwingConstants.CENTER);
@@ -68,14 +79,43 @@ public class MainView extends JFrame {
         sidePanel.add(btnUtilidades);
         sidePanel.add(btnAjustes);
 
-        // Panel principal (contenido)
-        contentPanel = new JPanel(new MigLayout("center, center"));
-        JLabel welcomeLabel = new JLabel("Página Principal");
-        welcomeLabel.setFont(new Font("Arial", Font.BOLD, 24));
-        contentPanel.add(welcomeLabel);
+        // Panel de contenido con CardLayout
+        contentPanel = new JPanel(new CardLayout());
+
+        // Instanciar vistas
+        JPanel dashboardView = new DashboardView();
+        JPanel ingresosView = new IngresosView();
+        JPanel gastosView = new GastosView();
+        JPanel rendimientoView = new RendView();
+        JPanel utilidadesView = new UtilsView();
+        JPanel ajustesView = new AjustesView();
+
+        // Agregar vistas al CardLayout
+        contentPanel.add(dashboardView, "Dashboard");
+        contentPanel.add(ingresosView, "Ingresos");
+        contentPanel.add(gastosView, "Gastos");
+        contentPanel.add(rendimientoView, "Rendimiento");
+        contentPanel.add(utilidadesView, "Utilidades");
+        contentPanel.add(ajustesView, "Ajustes");
+
+        // Listeners
+        btnDashboard.addActionListener(e -> switchPanel("Dashboard"));
+        btnIngresos.addActionListener(e -> switchPanel("Ingresos"));
+        btnGastos.addActionListener(e -> switchPanel("Gastos"));
+        btnRendimiento.addActionListener(e -> switchPanel("Rendimiento"));
+        btnUtilidades.addActionListener(e -> switchPanel("Utilidades"));
+        btnAjustes.addActionListener(e -> switchPanel("Ajustes"));
 
         add(sidePanel, BorderLayout.WEST);
         add(contentPanel, BorderLayout.CENTER);
+
+        // Mostrar vista por defecto
+        switchPanel("Dashboard");
+    }
+
+    private void switchPanel(String panelName) {
+        CardLayout cl = (CardLayout) contentPanel.getLayout();
+        cl.show(contentPanel, panelName);
     }
 
     public JPanel getContentPanel() {
