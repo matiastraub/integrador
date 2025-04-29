@@ -1,28 +1,8 @@
-#General
-.classpath
-.project
-
-#VsCode
-.settings/
-
-
-
-#Ignorar archivos bin
-/bin
-
-#Ignorar variables de entorno
-/src/db.properties
-
-#Ignorar librerias
-/libs
 # Maven
 /target/
 !.mvn/wrapper/maven-wrapper.jar
 
 # Eclipse
-bin/
-libs/
-src/main/resources/META-INF/maven/com.example/mi-proyecto/pom.xml
 .settings/
 .project
 .classpath
@@ -47,6 +27,3 @@ Thumbs.db
 # Archivos temporales
 *.bak
 *.tmp
-
-#Variables de entorno
-src/db.properties
