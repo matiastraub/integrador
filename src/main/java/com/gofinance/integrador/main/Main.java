@@ -13,5 +13,5 @@ public class Main {
             LoginView ve = new LoginView();
             ve.setVisible(true);
         });
-    }
+    }  
 }

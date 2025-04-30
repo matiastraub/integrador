@@ -27,3 +27,9 @@ Thumbs.db
 # Archivos temporales
 *.bak
 *.tmp
+
+# Directorios de entorno
+/bin
+
+/data
+
