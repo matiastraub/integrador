@@ -1,45 +1,85 @@
 package com.gofinance.integrador.database;
 
-import java.io.InputStream;
-import java.net.URL;
-import java.net.URLDecoder;
-import java.nio.charset.StandardCharsets;
+import java.io.*;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.util.Properties;
 
 public class DatabaseManager {
 
-    private static final String DRIVE = "jdbc:sqlite:";
+    private static final String DB_NAME = "integrador.db";
+
+    // Ruta donde se guardará una copia persistente
+    private static String getRutaPersistente() {
+        String userHome = System.getProperty("user.home");
+        String sep = System.getProperty("file.separator");
+        return userHome + sep + ".gofinance" + sep + DB_NAME;
+    }
 
     public static Connection connect() {
-        Properties prop = new Properties();
+        Connection conn = null;
+        InputStream propInput = null;
+        InputStream dbInput = null;
+        FileOutputStream dbOutput = null;
+
         try {
-            // Cargar el archivo desde el classpath (funciona dentro y fuera del IDE)
-            InputStream input = DatabaseManager.class.getClassLoader().getResourceAsStream("db.properties");
-            if (input == null) {
-                System.err.println("⚠️ No se encontró el archivo db.properties en el classpath.");
+            // 1. Leer propiedades desde resources
+            propInput = DatabaseManager.class.getClassLoader().getResourceAsStream("db.properties");
+            if (propInput == null) {
+                System.err.println("❌ No se encontró el archivo db.properties");
                 return null;
             }
 
-            prop.load(input);
-            String relativePath = prop.getProperty("URL");
+            Properties prop = new Properties();
+            prop.load(propInput);
+            String rutaDbEnResources = prop.getProperty("URL"); // data/integrador.db
 
-            // Obtener ruta real al archivo de base de datos
-            URL resourceUrl = DatabaseManager.class.getClassLoader().getResource(relativePath);
-            if (resourceUrl == null) {
-                System.err.println("⚠️ No se encontró el archivo de base de datos: " + relativePath);
-                return null;
+            // 2. Obtener archivo físico de destino
+            String dbPathFinal = getRutaPersistente();
+            File dbArchivoDestino = new File(dbPathFinal);
+
+            // 3. Si no existe, copiar desde resources
+            if (!dbArchivoDestino.exists()) {
+                System.out.println("Copiando base de datos a " + dbPathFinal);
+
+                dbInput = DatabaseManager.class.getClassLoader().getResourceAsStream(rutaDbEnResources);
+                if (dbInput == null) {
+                    System.err.println("No se encontró el archivo embebido: " + rutaDbEnResources);
+                    return null;
+                }
+
+                File directorioDestino = dbArchivoDestino.getParentFile();
+                if (!directorioDestino.exists()) {
+                    directorioDestino.mkdirs();
+                }
+
+                dbOutput = new FileOutputStream(dbArchivoDestino);
+                byte[] buffer = new byte[1024];
+                int bytesRead;
+                while ((bytesRead = dbInput.read(buffer)) != -1) {
+                    dbOutput.write(buffer, 0, bytesRead);
+                }
+
+                System.out.println("Base de datos copiada correctamente.");
             }
 
-            String decodedPath = URLDecoder.decode(resourceUrl.getPath(), StandardCharsets.UTF_8);
-            Connection conn = DriverManager.getConnection(DRIVE + decodedPath);
-            return conn;
+            // 4. Conectar a la base de datos
+            String url = "jdbc:sqlite:" + dbPathFinal;
+            conn = DriverManager.getConnection(url);
 
         } catch (Exception e) {
-            System.err.println("❌ Error de conexión: " + e.getMessage());
+            System.err.println("Error al conectar con la base de datos: " + e.getMessage());
             e.printStackTrace();
-            return null;
+        } finally {
+            try {
+                if (propInput != null) propInput.close();
+                if (dbInput != null) dbInput.close();
+                if (dbOutput != null) dbOutput.close();
+            } catch (IOException e) {
+                System.err.println("Error al cerrar streams: " + e.getMessage());
+            }
         }
+
+        return conn;
     }
 }

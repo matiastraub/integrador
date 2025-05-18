@@ -9,7 +9,10 @@ public class Transaccion {
     private int fkMetodoPago;
     private int fkUsuario;
     private int esIngreso;
-
+    
+    public Transaccion() {
+    }
+    
     public Transaccion(String fecha, String nombre, String descripcion, float monto, int fkCategoria, int fkMetodoPago,
             int fkUsuario,
             int esIngreso) {

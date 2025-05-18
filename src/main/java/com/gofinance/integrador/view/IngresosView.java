@@ -1,85 +1,80 @@
 package com.gofinance.integrador.view;
 
 import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
 import java.awt.*;
+import java.awt.event.ActionListener;
 
+import raven.datetime.DatePicker;
+
+@SuppressWarnings("serial")
 public class IngresosView extends JPanel {
 
+    private JButton btnAgregar;
+    private JButton btnEliminar;
+    private JTable tablaIngresos;
+    private DefaultTableModel modelo;
+
+    private DatePicker datePicker; // ✅ DatePicker declarado para uso desde el controlador
+
     public IngresosView() {
-        setBackground(Color.BLACK);
         setLayout(new BorderLayout(10, 10));
+        setBackground(Color.BLACK);
 
-        // Panel de botones arriba
-        JPanel topPanel = new JPanel(new BorderLayout());
+        // Panel superior con botones
+        JPanel topPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         topPanel.setOpaque(false);
-        topPanel.setBorder(BorderFactory.createEmptyBorder(10, 20, 0, 20));
-
-        JButton btnAgregar = new JButton("Registrar Ingreso");
+        btnAgregar = new JButton("Registrar Ingreso");
         btnAgregar.setBackground(new Color(0, 191, 99));
         btnAgregar.setForeground(Color.WHITE);
         btnAgregar.setFocusPainted(false);
-        btnAgregar.setFont(new Font("Arial", Font.BOLD, 14));
-        btnAgregar.setPreferredSize(new Dimension(160, 40));
 
-        JButton btnEliminar = new JButton("Eliminar Ingreso");
+        btnEliminar = new JButton("Eliminar Ingreso");
         btnEliminar.setBackground(new Color(255, 49, 49));
         btnEliminar.setForeground(Color.WHITE);
         btnEliminar.setFocusPainted(false);
-        btnEliminar.setFont(new Font("Arial", Font.BOLD, 14));
-        btnEliminar.setPreferredSize(new Dimension(160, 40));
 
-        topPanel.add(btnAgregar, BorderLayout.WEST);
-        topPanel.add(btnEliminar, BorderLayout.EAST);
+        topPanel.add(btnAgregar);
+        topPanel.add(btnEliminar);
 
-        // Panel de lista
-        JPanel listaPanel = new JPanel();
-        listaPanel.setLayout(new BoxLayout(listaPanel, BoxLayout.Y_AXIS));
-        listaPanel.setBackground(new Color(1, 1, 1));
-        listaPanel.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
+        // Tabla de ingresos
+        String[] columnas = {"Fecha", "Nombre", "Categoría", "Monto"};
+        modelo = new DefaultTableModel(columnas, 0);
+        tablaIngresos = new JTable(modelo);
+        tablaIngresos.setRowHeight(30);
 
-        // Ejemplo de ingresos
-        listaPanel.add(createIngresoItem("Trabajo fijo 1", "Periodico", "+700€"));
-        listaPanel.add(createIngresoItem("Trabajo App", "Ocasional", "+400€"));
+        JScrollPane scroll = new JScrollPane(tablaIngresos);
 
-        // Scroll para la lista
-        JScrollPane scrollPane = new JScrollPane(listaPanel);
-        scrollPane.setBorder(null);
-        scrollPane.getViewport().setBackground(new Color(30, 30, 30));
-        scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-        scrollPane.getVerticalScrollBar().setUI(new javax.swing.plaf.basic.BasicScrollBarUI() {
-            @Override
-            protected void configureScrollBarColors() {
-                this.thumbColor = Color.LIGHT_GRAY;
-                this.trackColor = new Color(30, 30, 30);
-            }
-        });
+        // Instanciar DatePicker para uso externo
+        datePicker = new DatePicker();
 
         add(topPanel, BorderLayout.NORTH);
-        add(scrollPane, BorderLayout.CENTER);
+        add(scroll, BorderLayout.CENTER);
     }
 
-    private JPanel createIngresoItem(String titulo, String tipo, String monto) {
-        JPanel item = new JPanel(new GridLayout(1, 3));
-        item.setBackground(new Color(45, 45, 45));
-        item.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
+    public void setControlador(ActionListener c) {
+        btnAgregar.addActionListener(c);
+        btnEliminar.addActionListener(c);
+    }
 
-        JLabel lblTitulo = new JLabel(titulo);
-        lblTitulo.setForeground(Color.WHITE);
-        lblTitulo.setFont(new Font("Arial", Font.PLAIN, 16));
+    public JButton getBtnAgregar() {
+        return btnAgregar;
+    }
 
-        JLabel lblTipo = new JLabel(tipo);
-        lblTipo.setForeground(Color.LIGHT_GRAY);
-        lblTipo.setFont(new Font("Arial", Font.PLAIN, 16));
+    public JButton getBtnEliminar() {
+        return btnEliminar;
+    }
 
-        JLabel lblMonto = new JLabel(monto);
-        lblMonto.setForeground(new Color(0, 255, 128));
-        lblMonto.setFont(new Font("Arial", Font.BOLD, 16));
-        lblMonto.setHorizontalAlignment(SwingConstants.RIGHT);
+    public DefaultTableModel getTableModel() {
+        return modelo;
+    }
 
-        item.add(lblTitulo);
-        item.add(lblTipo);
-        item.add(lblMonto);
+    public void limpiarTabla() {
+        modelo.setRowCount(0);
+    }
 
-        return item;
+    //Getter para que el controlador pueda usar el DatePicker
+    public DatePicker getDatePicker() {
+        return datePicker;
     }
 }

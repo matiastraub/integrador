@@ -10,115 +10,113 @@ import java.util.ArrayList;
 import com.gofinance.integrador.model.Categoria;
 
 public class CategoriaDAO {
-    /*
-     * private String nombre;
-     * private String descripcion;
-     * 
-     */
-    // Create tabla
+
+    // Crear tabla
     public static void createTable() {
-        String sql = "CREATE TABLE categoria (\"id\" INTEGER NOT NULL UNIQUE,\"nombre\"	TEXT NOT NULL,\"descripcion\"	TEXT);";
-        try {
-            Connection conn = DatabaseManager.connect();
-            Statement stmt = conn.createStatement();
+        String sql = "CREATE TABLE IF NOT EXISTS categoria ("
+                   + "id INTEGER PRIMARY KEY AUTOINCREMENT, "
+                   + "nombre TEXT NOT NULL, "
+                   + "descripcion TEXT)";
+        try (Connection conn = DatabaseManager.connect();
+             Statement stmt = conn.createStatement()) {
             stmt.execute(sql);
         } catch (SQLException e) {
-            System.out.println("❌ Error creando tabla: " + e.getMessage());
+            System.out.println("Error creando tabla: " + e.getMessage());
         }
     }
 
     // Insertar categoría
     public static int crearCategoria(Categoria categoria) {
-        int resp = -1;
-        String sql = "INSERT INTO categoria (nombre, descripcion) VALUES (?,?)";
-        try {
-            Connection conn = DatabaseManager.connect();
-            PreparedStatement pstmt = conn.prepareStatement(sql);
+        int resultado = -1;
+        String sql = "INSERT INTO categoria (nombre, descripcion) VALUES (?, ?)";
+        try (Connection conn = DatabaseManager.connect();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
             pstmt.setString(1, categoria.getNombre());
             pstmt.setString(2, categoria.getDescripcion());
-            resp = pstmt.executeUpdate();
-            System.out.println("✔️ Categoría se ha añadido con éxito!");
+
+            resultado = pstmt.executeUpdate();
         } catch (SQLException e) {
-            System.out.println("❌ Error de inserción: " + e.getMessage());
+            System.out.println("Error insertando categoría: " + e.getMessage());
         }
-        return resp;
+        return resultado;
     }
 
-    // Obtener categoría por Id
+    // Obtener categoría por ID
     public static Categoria getCategoria(int id) {
-        String sql = "SELECT * FROM categoria WHERE id = ?";
         Categoria categoria = null;
-        try {
-            Connection conn = DatabaseManager.connect();
-            PreparedStatement pstmt = conn.prepareStatement(sql);
+        String sql = "SELECT * FROM categoria WHERE id = ?";
+        try (Connection conn = DatabaseManager.connect();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
             pstmt.setInt(1, id);
             ResultSet rs = pstmt.executeQuery();
+
             if (rs.next()) {
-                categoria = new Categoria(rs.getString("nombre"),
-                        rs.getString("descripcion"));
-            } else {
-                System.out.println("⚠️ Categoría no encontrada");
+                categoria = new Categoria(
+                    rs.getString("nombre"),
+                    rs.getString("descripcion")
+                );
             }
         } catch (SQLException e) {
-            System.out.println("❌  Fetch error: " + e.getMessage());
+            System.out.println("Error obteniendo categoría: " + e.getMessage());
         }
         return categoria;
     }
 
-    // Obtener todos las categorías
+    // Obtener todas las categorías
     public static ArrayList<Categoria> getAllCategorias() {
         ArrayList<Categoria> categorias = new ArrayList<>();
         String sql = "SELECT * FROM categoria";
-        try {
-            Connection conn = DatabaseManager.connect();
-            Statement stmt = conn.createStatement();
-            ResultSet rs = stmt.executeQuery(sql);
+        try (Connection conn = DatabaseManager.connect();
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
+
             while (rs.next()) {
-                categorias.add(new Categoria(rs.getString("nombre"),
-                        rs.getString("descripcion")));
+                Categoria c = new Categoria(
+                    rs.getString("nombre"),
+                    rs.getString("descripcion")
+                );
+                categorias.add(c);
             }
         } catch (SQLException e) {
-            System.out.println("❌ Fetch error: " + e.getMessage());
+            System.out.println("Error obteniendo lista de categorías: " + e.getMessage());
         }
         return categorias;
     }
 
     // Actualizar categoría
-    public static void updateCategoria(int id, String nombre, String descripcion) {
-        String sql = "UPDATE categoria SET nombre = ?, descripcion = ?  WHERE id = ?";
-        try {
-            Connection conn = DatabaseManager.connect();
-            PreparedStatement pstmt = conn.prepareStatement(sql);
+    public static void actualizarCategoria(int id, String nombre, String descripcion) {
+        String sql = "UPDATE categoria SET nombre = ?, descripcion = ? WHERE id = ?";
+        try (Connection conn = DatabaseManager.connect();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
             pstmt.setString(1, nombre);
             pstmt.setString(2, descripcion);
             pstmt.setInt(3, id);
-            int affectedRows = pstmt.executeUpdate();
-            if (affectedRows > 0) {
-                System.out.println("✔️ Categoría actualizado con éxito!");
-            } else {
-                System.out.println("⚠️ Categoría no encontrada.");
+
+            int filas = pstmt.executeUpdate();
+            if (filas == 0) {
+                System.out.println("No se encontró la categoría a actualizar.");
             }
         } catch (SQLException e) {
-            System.out.println("❌ Error de actualización: " + e.getMessage());
+            System.out.println("Error actualizando categoría: " + e.getMessage());
         }
     }
 
-    // Borrar categoría
-    public static void deleteCategoria(int id) {
+    // Eliminar categoría
+    public static void eliminarCategoria(int id) {
         String sql = "DELETE FROM categoria WHERE id = ?";
-        try {
-            Connection conn = DatabaseManager.connect();
-            PreparedStatement pstmt = conn.prepareStatement(sql);
+        try (Connection conn = DatabaseManager.connect();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
             pstmt.setInt(1, id);
-            int affectedRows = pstmt.executeUpdate();
-            if (affectedRows > 0) {
-                System.out.println("✔️ Categoría borrada con éxito!");
-            } else {
-                System.out.println("⚠️ Categoría no encontrada.");
+            int filas = pstmt.executeUpdate();
+            if (filas == 0) {
+                System.out.println("No se encontró la categoría a eliminar.");
             }
         } catch (SQLException e) {
-            System.out.println("❌ Delete error: " + e.getMessage());
+            System.out.println("Error eliminando categoría: " + e.getMessage());
         }
     }
-
 }
