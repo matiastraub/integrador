@@ -5,24 +5,24 @@ import javax.swing.UIManager;
 
 import com.formdev.flatlaf.themes.FlatMacDarkLaf;
 import com.gofinance.integrador.controller.AppControlador;
-import com.gofinance.integrador.database.DatabaseInit;
+import com.gofinance.integrador.database.DatabaseInitializer;
 import com.gofinance.integrador.view.LoginView;
 import com.gofinance.integrador.view.SignupView;
 
 public class Main {
 
     public static void main(String[] args) {
-        // Establecer tema visual
+        // tema visual
         try {
             UIManager.setLookAndFeel(new FlatMacDarkLaf());
         } catch (Exception e) {
             System.out.println("No se pudo cargar FlatLaf: " + e.getMessage());
         }
 
-        // Inicializar la estructura de la base de datos
-        DatabaseInit.inicializarTablas();
+        // Se inicializa la estructura de la base de datos
+        DatabaseInitializer.inicializarTablas();
 
-        // Iniciar interfaz gráfica
+        // Se inicializa la interfaz gráfica
         EventQueue.invokeLater(new Runnable() {
             @Override
             public void run() {

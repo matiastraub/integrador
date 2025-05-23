@@ -20,12 +20,13 @@ public class AppControlador implements ActionListener {
     private UsuarioDAO usuarioDAO;
     private UsuarioValidacion validador;
 
-    // Controladores específicos
+    // Controladores Especificos   
     private IngresosControlador ingresosControlador;
     private GastosControlador gastosControlador;
-    // private DashboardControlador dashboardControlador;
-    // ...
+    // TODO: private DashboadrControlador dashboardControlador;
+    // TODO: ....
 
+  
     private int intentos;
 
     public AppControlador(LoginView lv, SignupView sv) {
@@ -35,7 +36,7 @@ public class AppControlador implements ActionListener {
         this.validador = new UsuarioValidacion();
         this.intentos = 0;
 
-        // =================== SELECCIÓN DE FECHA EN SIGNUP ===================
+        // Asignamos un listener para abrir el selector de fecha
         this.signupView.getBtnSeleccionarFecha().addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -51,7 +52,7 @@ public class AppControlador implements ActionListener {
 
         if (src instanceof JButton) {
 
-            // =================== LOGIN ===================
+            // Procesamos el intento de login
             if (src.equals(loginView.getBtnLogin())) {
                 Usuario u = loginView.getDatosUsuario();
 
@@ -62,7 +63,7 @@ public class AppControlador implements ActionListener {
                         if (dbUser.getPassword().equals(u.getPassword())) {
                             loginView.dispose();
                             mainView = new MainView(dbUser);
-                            mainView.setControlador(this); //Conectar navegación
+                            mainView.setControlador(this);
                             mainView.setVisible(true);
                         } else {
                             intentos++;
@@ -78,18 +79,18 @@ public class AppControlador implements ActionListener {
                     }
                 }
 
-            // =================== CAMBIAR A REGISTRO ===================
+            // Abrimos la vista de registro
             } else if (src.equals(loginView.getBtnRegistro())) {
                 loginView.dispose();
                 signupView.setVisible(true);
 
-            // =================== CANCELAR REGISTRO ===================
+            // Cancelamos el registro y volvemos al login
             } else if (src.equals(signupView.getBtnCancelar())) {
                 signupView.dispose();
                 loginView.setVisible(true);
                 loginView.limpiarCampos();
 
-            // =================== ACEPTAR REGISTRO ===================
+            // Intentamos registrar al nuevo usuario
             } else if (src.equals(signupView.getBtnAceptar())) {
                 Usuario nuevo = signupView.getDatosUsuario();
 
@@ -115,44 +116,38 @@ public class AppControlador implements ActionListener {
                 }
             }
 
-            // =================== BOTONES DE LA VISTA PRINCIPAL ===================
+            // Controlamos la navegación dentro de la vista principal
             if (mainView != null) {
 
                 if (src.equals(mainView.getBtnDashboard())) {
                     mainView.mostrarVista("Dashboard");
-
                     // En el futuro: inicializar dashboardControlador aquí
 
                 } else if (src.equals(mainView.getBtnIngresos())) {
                     mainView.mostrarVista("Ingresos");
-
                     if (ingresosControlador == null) {
                         ingresosControlador = new IngresosControlador(mainView.getIngresosView(), mainView.getUsuario());
                     }
 
                 } else if (src.equals(mainView.getBtnGastos())) {
                     mainView.mostrarVista("Gastos");
-
                     if (gastosControlador == null) {
                         gastosControlador = new GastosControlador(mainView.getGastosView(), mainView.getUsuario());
                     }
 
                 } else if (src.equals(mainView.getBtnRendimiento())) {
                     mainView.mostrarVista("Rendimiento");
-
                     // rendimientoControlador = ...
 
                 } else if (src.equals(mainView.getBtnUtilidades())) {
                     mainView.mostrarVista("Utilidades");
-
                     // utilidadesControlador = ...
 
                 } else if (src.equals(mainView.getBtnAjustes())) {
                     mainView.mostrarVista("Ajustes");
-
                     // ajustesControlador = ...
                 }
             }
         }
     }
-}
+} 

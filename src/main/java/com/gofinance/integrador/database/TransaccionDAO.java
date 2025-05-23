@@ -53,6 +53,60 @@ public class TransaccionDAO {
         }
         return resultado;
     }
+    
+    public static int insertarIngreso(String fecha, String nombre, String categoria, String valor) {
+        String sql = "INSERT INTO transaccion (fecha, nombre, descripcion, monto, fkcategoria, fkmetodo_pago, fkusuario, es_ingreso) "
+                   + "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+        try (Connection conn = DatabaseManager.connect();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setString(1, fecha);
+            pstmt.setString(2, nombre);
+            pstmt.setString(3, categoria); // Usamos la categoría como descripción
+            pstmt.setFloat(4, Float.parseFloat(valor));
+            pstmt.setInt(5, 1); // fkcategoria: valor por defecto
+            pstmt.setInt(6, 1); // fkmetodo_pago: valor por defecto
+            pstmt.setInt(7, 1); // fkusuario: valor por defecto
+            pstmt.setInt(8, 1); // es_ingreso: 1 porque es ingreso
+
+            return pstmt.executeUpdate();
+
+        } catch (SQLException e) {
+            System.out.println("Error al insertar ingreso: " + e.getMessage());
+        } catch (NumberFormatException e) {
+            System.out.println("Valor numérico inválido: " + e.getMessage());
+        }
+
+        return 0;
+    }
+
+
+    
+    public static int insertarGastoBasico(String fecha, String nombre, String categoria, String valor) {
+        String sql = "INSERT INTO transaccion (fecha, nombre, descripcion, monto, fkcategoria, fkmetodo_pago, fkusuario, es_ingreso) "
+                   + "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+        try (Connection conn = DatabaseManager.connect();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setString(1, fecha);
+            pstmt.setString(2, nombre);
+            pstmt.setString(3, categoria); // usamos categoria como "descripcion"
+            pstmt.setFloat(4, Float.parseFloat(valor));
+            pstmt.setInt(5, 1); // fkcategoria: valor por defecto
+            pstmt.setInt(6, 1); // fkmetodo_pago: valor por defecto
+            pstmt.setInt(7, 1); // fkusuario: simulamos usuario 1
+            pstmt.setInt(8, 0); // es_ingreso: 0 porque es gasto
+
+            return pstmt.executeUpdate();
+
+        } catch (SQLException e) {
+            System.out.println("Error al insertar gasto básico: " + e.getMessage());
+        } catch (NumberFormatException e) {
+            System.out.println("Valor no válido: " + e.getMessage());
+        }
+        return 0;
+    }
+
 
     // Obtener transacción por ID
     public static Transaccion getTransaccion(int id) {

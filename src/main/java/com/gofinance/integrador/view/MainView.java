@@ -21,17 +21,18 @@ public class MainView extends JFrame {
     private JButton btnIngresos;
     private JButton btnGastos;
     private JButton btnRendimiento;
-    private JButton btnUtilidades;
+    private JButton btnUtilidades; // Calculadora
     private JButton btnAjustes;
 
     // Vistas individuales como atributos privados
     private DashboardView dashboardView;
     private IngresosView ingresosView;
-    private GastosView gastosView;
+    private VentanaGastos ventanaGastos;
     private RendView rendimientoView;
     private UtilsView utilidadesView;
     private AjustesView ajustesView;
 
+   
     public MainView(Usuario usuario) {
         this.usuario = usuario;
 
@@ -65,7 +66,7 @@ public class MainView extends JFrame {
         btnGastos = new JButton("Gastos");
         btnRendimiento = new JButton("Rendimiento");
         btnUtilidades = new JButton("Utilidades");
-        btnAjustes = new JButton("Ajustes");
+        btnAjustes = new JButton("Perfil"); // He cambiando a perfil debido a que así se llamara en el menu 
 
         sidePanel.add(profilePic, "align center");
         sidePanel.add(userName, "align center");
@@ -83,7 +84,7 @@ public class MainView extends JFrame {
         // Instanciar todas las vistas una sola vez
         dashboardView = new DashboardView();
         ingresosView = new IngresosView();
-        gastosView = new GastosView();
+        ventanaGastos = new VentanaGastos();
         rendimientoView = new RendView();
         utilidadesView = new UtilsView();
         ajustesView = new AjustesView();
@@ -91,10 +92,10 @@ public class MainView extends JFrame {
         // Agregar vistas al contentPanel
         contentPanel.add(dashboardView, "Dashboard");
         contentPanel.add(ingresosView, "Ingresos");
-        contentPanel.add(gastosView, "Gastos");
+        contentPanel.add(ventanaGastos, "Gastos");
         contentPanel.add(rendimientoView, "Rendimiento");
         contentPanel.add(utilidadesView, "Utilidades");
-        contentPanel.add(ajustesView, "Ajustes");
+        contentPanel.add(ajustesView, "Perfil");
 
         // Añadir al frame
         add(sidePanel, BorderLayout.WEST);
@@ -128,13 +129,13 @@ public class MainView extends JFrame {
     //Getters públicos para los controladores específicos
     public IngresosView getIngresosView() { return ingresosView; }
     public DashboardView getDashboardView() { return dashboardView; }
-    public GastosView getGastosView() { return gastosView; }
+    public VentanaGastos getGastosView() { return ventanaGastos; }
     public RendView getRendimientoView() { return rendimientoView; }
     public UtilsView getUtilidadesView() { return utilidadesView; }
     public AjustesView getAjustesView() { return ajustesView; }
 
 	public Usuario getUsuario() {
-		
+		// TODO Auto-generated method stub
 		return usuario;
 	}
 }

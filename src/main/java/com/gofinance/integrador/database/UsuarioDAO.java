@@ -26,13 +26,13 @@ public class UsuarioDAO {
             stmt = con.createStatement();
             stmt.execute(sql);
         } catch (SQLException e) {
-            System.out.println("❌ Error al crear tabla usuario: " + e.getMessage());
+            System.out.println("Error al crear tabla usuario: " + e.getMessage());
         } finally {
             try {
                 if (stmt != null) stmt.close();
                 if (con != null) con.close();
             } catch (SQLException e) {
-                System.out.println("❌ Error al cerrar recursos: " + e.getMessage());
+                System.out.println("Error al cerrar recursos: " + e.getMessage());
             }
         }
     }
