@@ -21,12 +21,14 @@
 
 ## Estructura del proyecto
 
+```bash
 src/
 └── com.gofinance.integrador
 ├── main # Clase principal (Main.java)
 ├── controller # Lógica de negocio y control de vistas
 ├── view # Interfaces gráficas (Swing)
 └── database # Inicialización y manejo de la base de datos
+```
 
 ## Cómo ejecutar el proyecto
 
