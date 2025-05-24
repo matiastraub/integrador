@@ -1,43 +1,92 @@
 package com.gofinance.integrador.controller;
-import java.util.regex.Pattern;
 
 public class UsuarioValidacion {
 
-    private static final int MIN_STR = 2;
-    private static final int MAX_STR = 30;
-    private static final String STR_REGEX = "^[A-Za-z]{" + MIN_STR + "," + MAX_STR + "}$";
-    private static final String EMAIL_REGEX = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$";
-    private static final String TEL_REGEX = "^\\d{9}$";
-    private static final String PASSWORD_REGEX = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z]).{8,20}$";
+    public boolean esValidoNombre(String nombre) {
+        if (nombre == null || nombre.length() < 2 || nombre.length() > 30) {
+            return false;
+        }
 
-    public static boolean esValidoNombre(String name) {
-        return name != null && Pattern.matches(STR_REGEX, name);
+        for (int i = 0; i < nombre.length(); i++) {
+            char c = nombre.charAt(i);
+            if (!Character.isLetter(c)) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
-    public static boolean esValidoEmail(String email) {
-        return email != null && Pattern.matches(EMAIL_REGEX, email);
+    public boolean esValidoEmail(String email) {
+        if (email == null || email.length() < 5) {
+            return false;
+        }
+
+        int atIndex = email.indexOf('@');
+        int dotIndex = email.lastIndexOf('.');
+
+        return atIndex > 0 && dotIndex > atIndex;
     }
 
-    public static boolean esValidoTel(String phoneNumber) {
-        return phoneNumber != null && Pattern.matches(TEL_REGEX, phoneNumber);
+    public boolean esValidoTel(String telefono) {
+        if (telefono == null || telefono.length() != 9) {
+            return false;
+        }
+
+        for (int i = 0; i < telefono.length(); i++) {
+            char c = telefono.charAt(i);
+            if (!Character.isDigit(c)) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
-    public static boolean esValidoPassword(String password) {
-        return password != null && Pattern.matches(PASSWORD_REGEX, password);
+    public boolean esValidoPassword(String password) {
+        if (password == null || password.length() < 8 || password.length() > 20) {
+            return false;
+        }
+
+        boolean tieneMayus = false;
+        boolean tieneMinus = false;
+        boolean tieneNumero = false;
+
+        for (int i = 0; i < password.length(); i++) {
+            char c = password.charAt(i);
+
+            if (Character.isUpperCase(c)) {
+                tieneMayus = true;
+            } else if (Character.isLowerCase(c)) {
+                tieneMinus = true;
+            } else if (Character.isDigit(c)) {
+                tieneNumero = true;
+            }
+        }
+
+        return tieneMayus && tieneMinus && tieneNumero;
     }
 
-    public static boolean esValidoFechaNac(String dob) {
-        // Basic check: Ensure it's in YYYY-MM-DD format
-        return dob != null && dob.matches("\\d{4}-\\d{2}-\\d{2}");
-    }
+    public boolean esValidoFechaNac(String fecha) {
+        if (fecha == null || fecha.length() != 10) {
+            return false;
+        }
 
-    public static void main(String[] args) {
-        // Test
-        System.out.println(esValidoNombre("John")); // true
-        System.out.println(esValidoNombre("J")); // false
-        System.out.println(esValidoEmail("john.doe@example.com")); // true
-        System.out.println(esValidoTel("1234567890")); // true
-        System.out.println(esValidoPassword("StrongP@ss1")); // true
-        System.out.println(esValidoFechaNac("1995-06-25")); // true
+        if (fecha.charAt(4) != '-' || fecha.charAt(7) != '-') {
+            return false;
+        }
+
+        try {
+            int anio = Integer.parseInt(fecha.substring(0, 4));
+            int mes = Integer.parseInt(fecha.substring(5, 7));
+            int dia = Integer.parseInt(fecha.substring(8, 10));
+
+            return (anio > 1900 && anio < 2100) &&
+                   (mes >= 1 && mes <= 12) &&
+                   (dia >= 1 && dia <= 31); // no validamos días exactos por mes
+
+        } catch (NumberFormatException e) {
+            return false;
+        }
     }
 }

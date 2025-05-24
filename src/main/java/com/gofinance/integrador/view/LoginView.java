@@ -1,92 +1,92 @@
 package com.gofinance.integrador.view;
 
-import com.gofinance.integrador.controller.UsuarioValidacion;
-import com.gofinance.integrador.database.UsuarioDAO;
 import com.gofinance.integrador.model.Usuario;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.awt.event.ActionListener;
 
 @SuppressWarnings("serial")
 public class LoginView extends JFrame {
 
-    public static final String BTN_LOGIN = "Login";
+    private JButton loginBtn;
+    private JButton registroBtn;
 
-    private final JButton loginBtn;
-    private final JTextField usernameField;
-    private final JPasswordField passwordField;
-    private final JLabel signupLink;
-    private SignupView sv;
-    private MainView mainView;
+    private JTextField campoEmail;
+    private JPasswordField campoPassword;
 
     public LoginView() {
         setTitle("Login");
-        setSize(300, 270);
+        setSize(316, 281);
         setResizable(false);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
 
-        // Configurar MigLayout
-        JPanel mainPanel = new JPanel(new MigLayout("wrap 2", "[fill, grow]", "[]10[]10[]10[]"));
-        mainPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+        JPanel panel = new JPanel(new MigLayout("wrap 2", "[fill, grow]", "[]10[]10[]10[]10[]"));
+        panel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
-        // Usuario
-        mainPanel.add(new JLabel("Email:"), "span 2");
-        usernameField = new JTextField();
-        mainPanel.add(usernameField, "span 2, growx");
+        // Mostramos el campo para introducir el email
+        panel.add(new JLabel("Email:"), "span 2");
+        campoEmail = new JTextField();
+        panel.add(campoEmail, "span 2, growx");
 
-        // Contraseña
-        mainPanel.add(new JLabel("Password:"), "span 2");
-        passwordField = new JPasswordField();
-        mainPanel.add(passwordField, "span 2, growx");
+        // Mostramos el campo para introducir la contrasena
+        panel.add(new JLabel("Contrasena:"), "span 2");
+        campoPassword = new JPasswordField();
+        panel.add(campoPassword, "span 2, growx");
 
-        // Botón de Login
-        loginBtn = new JButton(BTN_LOGIN);
-        mainPanel.add(loginBtn, "span 2, growx, gaptop 10");
+        // Mostramos los botones de acceso y registro
+        loginBtn = new JButton("Login");
+        registroBtn = new JButton("Registrarse");
+        panel.add(loginBtn, "span 2, growx, gaptop 10");
+        panel.add(registroBtn, "span 2, growx");
 
-        loginBtn.addActionListener((ActionEvent e) -> login());
-
-        // Enlace de registro
-        signupLink = new JLabel("¿Nuevo usuario? Regístrate aquí");
-        signupLink.setForeground(Color.BLUE);
-        signupLink.setCursor(new Cursor(Cursor.HAND_CURSOR));
-        mainPanel.add(signupLink, "span 2, align center, gaptop 10");
-
-        signupLink.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent evt) {
-                sv = new SignupView();
-                sv.setVisible(true);
-                dispose();
-            }
-        });
-
-        add(mainPanel, BorderLayout.CENTER);
+        getContentPane().add(panel, BorderLayout.CENTER);
     }
 
-    public void login() {
-        String user = usernameField.getText();
-        String pass = new String(passwordField.getPassword());
-        if (!UsuarioValidacion.esValidoEmail(user)) {
-            JOptionPane.showMessageDialog(this, "Email inválido.");
-            return;
+    // Asignamos el ActionListener al controlador externo
+    public void setControlador(ActionListener c) {
+        loginBtn.addActionListener(c);
+        registroBtn.addActionListener(c);
+    }
+
+    // Obtenemos un objeto Usuario con el email y la contrasena proporcionados
+    public Usuario getDatosUsuario() {
+        String email = campoEmail.getText();
+        String pass = new String(campoPassword.getPassword());
+
+        if (email.isEmpty() || pass.isEmpty()) {
+            mostrarError("Todos los campos son obligatorios.");
+            return null;
         }
-        if (!UsuarioValidacion.esValidoPassword(pass)) {
-            JOptionPane.showMessageDialog(this, "Contraseña inválida.");
-            return;
-        }
-        boolean esValido = UsuarioDAO.checkLogin(user, pass);
-        if (esValido) {
-            dispose();
-            Usuario usuario = UsuarioDAO.getUsuarioEmail(user);
-            mainView = new MainView(usuario);
-            mainView.setVisible(true);
-        } else {
-            JOptionPane.showMessageDialog(this, "Usuario o contraseña incorrectos.");
-        }
+
+        return new Usuario(0, null, null, null, null, pass, email);
+    }
+
+    // Mostramos un mensaje de error al usuario
+    public void mostrarError(String mensaje) {
+        JOptionPane.showMessageDialog(this, mensaje, "Error", JOptionPane.ERROR_MESSAGE);
+    }
+
+    // Vaciamos los campos de entrada de datos
+    public void limpiarCampos() {
+        campoEmail.setText("");
+        campoPassword.setText("");
+    }
+
+    // Cargamos el email registrado automaticamente en el campo correspondiente
+    public void cargarUsuario(String email) {
+        campoEmail.setText(email);
+    }
+
+    // Accedemos al boton de Login
+    public JButton getBtnLogin() {
+        return loginBtn;
+    }
+
+    // Accedemos al boton de Registro
+    public JButton getBtnRegistro() {
+        return registroBtn;
     }
 }
