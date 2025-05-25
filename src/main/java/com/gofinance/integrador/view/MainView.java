@@ -88,7 +88,9 @@ public class MainView extends JFrame {
         rendimientoView = new RendView();
         utilidadesView = new UtilsView();
         ajustesView = new AjustesView();
-
+        //Conectar controladores
+        new com.gofinance.integrador.controller.IngresosControlador(ingresosView, usuario);
+        new com.gofinance.integrador.controller.GastosControlador(ventanaGastos, usuario);
         // Agregar vistas al contentPanel
         contentPanel.add(dashboardView, "Dashboard");
         contentPanel.add(ingresosView, "Ingresos");

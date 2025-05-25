@@ -16,21 +16,20 @@ public class IngresosView extends JPanel {
     private DefaultTableModel modeloTabla;
     private JButton btnRegistrar;
     private JButton btnAniadir;
+    private JButton btnEliminar;
     private JTextField txtNombre;
     private JComboBox<String> comboBoxCategoria;
     private JTextField txtValor;
     private JSpinner datePicker;
     private JPanel panelFormulario;
-	private String fecha;
-	private String nombre;
-	private String categoria;
-	private double valor;
+
+    private IngresosControlador controlador;
 
     public IngresosView() {
         setLayout(null);
         setPreferredSize(new Dimension(784, 600));
 
-        // Tabla de ingresos
+        // Tabla
         String[] columnas = {"Fecha", "Nombre", "Categoría", "Valor (€)"};
         modeloTabla = new DefaultTableModel(columnas, 0);
         tablaIngresos = new JTable(modeloTabla);
@@ -38,11 +37,39 @@ public class IngresosView extends JPanel {
         scrollTabla.setBounds(50, 20, 700, 256);
         add(scrollTabla);
 
-        // Panel formulario
+        // Botón Registrar
+        btnRegistrar = new JButton("Registrar");
+        btnRegistrar.setFont(new Font("Arial", Font.BOLD, 16));
+        btnRegistrar.setBounds(50, 286, 340, 30);
+        btnRegistrar.setBackground(new Color(0, 224, 131));
+        btnRegistrar.setForeground(Color.WHITE);
+        btnRegistrar.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                panelFormulario.setVisible(true);
+            }
+        });
+        add(btnRegistrar);
+
+        // Botón Eliminar
+        btnEliminar = new JButton("Eliminar fila seleccionada");
+        btnEliminar.setFont(new Font("Arial", Font.BOLD, 16));
+        btnEliminar.setBounds(410, 286, 340, 30);
+        btnEliminar.setBackground(Color.RED);
+        btnEliminar.setForeground(Color.WHITE);
+        btnEliminar.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+            	int filaSeleccionada = tablaIngresos.getSelectedRow();
+                if (controlador != null) {
+                	controlador.eliminarIngresoSeleccionado(filaSeleccionada);
+                }
+            }
+        });
+        add(btnEliminar);
+
+        // Formulario
         panelFormulario = new JPanel(null);
         panelFormulario.setBounds(50, 326, 700, 200);
-        
-        
+
         JLabel lblFecha = new JLabel("Fecha:");
         lblFecha.setBounds(0, 0, 100, 25);
         panelFormulario.add(lblFecha);
@@ -63,8 +90,9 @@ public class IngresosView extends JPanel {
         lblCategoria.setBounds(0, 70, 100, 25);
         panelFormulario.add(lblCategoria);
         comboBoxCategoria = new JComboBox<>();
-        for (String categoria : CategoriaControlador.obtenerCategoriasIngresos()) {
-            comboBoxCategoria.addItem(categoria);
+        String[] categorias = CategoriaControlador.obtenerCategoriasIngresos();
+        for (int i = 0; i < categorias.length; i++) {
+            comboBoxCategoria.addItem(categorias[i]);
         }
         comboBoxCategoria.setBounds(120, 70, 253, 25);
         panelFormulario.add(comboBoxCategoria);
@@ -80,20 +108,8 @@ public class IngresosView extends JPanel {
         btnAniadir.setBounds(120, 145, 253, 30);
         panelFormulario.add(btnAniadir);
 
-        panelFormulario.setVisible(false);
-        add(panelFormulario);
-
-        // Botón Registrar
-        btnRegistrar = new JButton("Registrar");
-        btnRegistrar.setBounds(50, 286, 700, 30);
-        btnRegistrar.setBackground(new Color(0, 224, 131));
-        btnRegistrar.setForeground(Color.WHITE);
-        btnRegistrar.addActionListener(e -> panelFormulario.setVisible(true));
-        add(btnRegistrar);
-
-        // Lógica del botón Añadir
+        // Evento clásico del botón Añadir
         btnAniadir.addActionListener(new ActionListener() {
-            @Override
             public void actionPerformed(ActionEvent e) {
                 String fecha = ((JSpinner.DateEditor) datePicker.getEditor()).getFormat().format(datePicker.getValue());
                 String nombre = txtNombre.getText();
@@ -101,78 +117,46 @@ public class IngresosView extends JPanel {
                 String valor = txtValor.getText();
 
                 if (!nombre.isEmpty() && !valor.isEmpty()) {
-                    aniadirFilaTabla(fecha, nombre, categoria, valor);
-
-                    int resultado = com.gofinance.integrador.database.TransaccionDAO.insertarIngreso(fecha, nombre, categoria, valor);
-                    if (resultado > 0) {
-                        JOptionPane.showMessageDialog(null, "Ingreso guardado correctamente.", "Añadido", JOptionPane.INFORMATION_MESSAGE);
-                    } else {
-                        JOptionPane.showMessageDialog(null, "No se pudo guardar el ingreso.", "Error", JOptionPane.ERROR_MESSAGE);
-                    }
-
+                    controlador.registrarIngreso(fecha, nombre, categoria, valor);
                     limpiarCampos();
                     datePicker.setValue(new Date());
                     panelFormulario.setVisible(false);
-
                 } else {
                     JOptionPane.showMessageDialog(IngresosView.this, "Por favor completa todos los campos.", "Error", JOptionPane.ERROR_MESSAGE);
                 }
             }
         });
-        
-     
-        cargarIngresosDesdeBD();
 
-
+        panelFormulario.setVisible(false);
+        add(panelFormulario);
     }
 
     public void aniadirFilaTabla(String fecha, String nombre, String categoria, String valor) {
         modeloTabla.addRow(new Object[]{fecha, nombre, categoria, valor});
     }
 
-    
-
     public void limpiarCampos() {
         txtNombre.setText("");
         txtValor.setText("");
-    }
-
-    public void cargarIngresosDesdeBD() {
-        java.util.List<com.gofinance.integrador.model.Transaccion> lista = com.gofinance.integrador.database.TransaccionDAO.getTransaccionesPorUsuario(1);
-        for (com.gofinance.integrador.model.Transaccion t : lista) {
-            if (t.getEsIngreso() == 1) {
-            	modeloTabla.addRow(new Object[]{t.getFecha(), t.getNombre(), t.getDescripcion(), t.getMonto()});
-            }
-        }
-        txtNombre.setText("");
-        txtValor.setText("");
-    }
-    
-   
-
-    public DefaultTableModel getTableModel() {
-        return modeloTabla;
     }
 
     public void limpiarTabla() {
         modeloTabla.setRowCount(0);
     }
 
-	public void setControlador(IngresosControlador ingresosControlador) {
-		// TODO Auto-generated method stub
-		
-	}
+    public DefaultTableModel getTableModel() {
+        return modeloTabla;
+    }
 
-	public Object getBtnAgregar() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    public void setControlador(IngresosControlador controlador) {
+        this.controlador = controlador;
+    }
 
-	public Object getBtnEliminar() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    public Object getBtnAgregar() {
+        return btnAniadir;
+    }
 
- }
-
-
+    public Object getBtnEliminar() {
+        return btnEliminar;
+    }
+}

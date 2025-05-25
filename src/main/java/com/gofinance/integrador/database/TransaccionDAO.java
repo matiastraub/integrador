@@ -54,7 +54,7 @@ public class TransaccionDAO {
         return resultado;
     }
     
-    public static int insertarIngreso(String fecha, String nombre, String categoria, String valor) {
+    public static int insertarIngreso(String fecha, String nombre, String categoria, String valor, int idUsuario) {
         String sql = "INSERT INTO transaccion (fecha, nombre, descripcion, monto, fkcategoria, fkmetodo_pago, fkusuario, es_ingreso) "
                    + "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
         try (Connection conn = DatabaseManager.connect();
@@ -66,7 +66,7 @@ public class TransaccionDAO {
             pstmt.setFloat(4, Float.parseFloat(valor));
             pstmt.setInt(5, 1); // fkcategoria: valor por defecto
             pstmt.setInt(6, 1); // fkmetodo_pago: valor por defecto
-            pstmt.setInt(7, 1); // fkusuario: valor por defecto
+            pstmt.setInt(7, idUsuario); // fkusuario: valor por defecto
             pstmt.setInt(8, 1); // es_ingreso: 1 porque es ingreso
 
             return pstmt.executeUpdate();
@@ -82,7 +82,7 @@ public class TransaccionDAO {
 
 
     
-    public static int insertarGastoBasico(String fecha, String nombre, String categoria, String valor) {
+    public static int insertarGastoBasico(String fecha, String nombre, String categoria, String valor, int idUsuario) {
         String sql = "INSERT INTO transaccion (fecha, nombre, descripcion, monto, fkcategoria, fkmetodo_pago, fkusuario, es_ingreso) "
                    + "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
         try (Connection conn = DatabaseManager.connect();
@@ -94,7 +94,7 @@ public class TransaccionDAO {
             pstmt.setFloat(4, Float.parseFloat(valor));
             pstmt.setInt(5, 1); // fkcategoria: valor por defecto
             pstmt.setInt(6, 1); // fkmetodo_pago: valor por defecto
-            pstmt.setInt(7, 1); // fkusuario: simulamos usuario 1
+            pstmt.setInt(7, idUsuario); // fkusuario: simulamos usuario 1
             pstmt.setInt(8, 0); // es_ingreso: 0 porque es gasto
 
             return pstmt.executeUpdate();
@@ -129,6 +129,7 @@ public class TransaccionDAO {
                     rs.getInt("fkusuario"),
                     rs.getInt("es_ingreso")
                 );
+                transaccion.setId(rs.getInt("id"));
             }
         } catch (SQLException e) {
             System.out.println("Error al buscar transacción: " + e.getMessage());
@@ -157,6 +158,7 @@ public class TransaccionDAO {
                     rs.getInt("fkusuario"),
                     rs.getInt("es_ingreso")
                 );
+                t.setId(rs.getInt("id"));
                 lista.add(t);
             }
         } catch (SQLException e) {
