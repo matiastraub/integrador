@@ -7,8 +7,11 @@ import com.gofinance.integrador.view.IngresosView;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
-import java.util.ArrayList;
+import java.util.List;
 
+/**
+ * Controlador para gestionar operaciones de ingresos siguiendo el estilo clásico MVC.
+ */
 public class IngresosControlador {
 
     private IngresosView vista;
@@ -21,8 +24,17 @@ public class IngresosControlador {
         cargarIngresos();
     }
 
+    /**
+     * Devuelve los nombres de las categorías de ingresos para poblar el combo.
+     */
+    public String[] getNombresCategorias() {
+        // Llama al método estático de CategoriaControlador
+        return CategoriaControlador.obtenerCategoriasIngresos();
+    }
+
     public void registrarIngreso(String fecha, String nombre, String categoria, String valor) {
         float monto;
+        int idCat = CategoriaControlador.getIdCategoriaIngreso(categoria);
         try {
             monto = Float.parseFloat(valor);
         } catch (NumberFormatException e) {
@@ -35,7 +47,7 @@ public class IngresosControlador {
                 nombre,
                 categoria,
                 monto,
-                1,
+                idCat,
                 1,
                 usuario.getId(),
                 1
@@ -55,7 +67,10 @@ public class IngresosControlador {
         int filas = modelo.getRowCount();
 
         if (filas > 0) {
-            int confirm = JOptionPane.showConfirmDialog(null, "¿Seguro que quieres eliminar el último ingreso?", "Confirmar", JOptionPane.YES_NO_OPTION);
+            int confirm = JOptionPane.showConfirmDialog(null,
+                    "¿Seguro que quieres eliminar el último ingreso?",
+                    "Confirmar",
+                    JOptionPane.YES_NO_OPTION);
             if (confirm == JOptionPane.YES_OPTION) {
                 int ultimoId = TransaccionDAO.getUltimoIdIngreso(usuario.getId());
                 TransaccionDAO.eliminarTransaccion(ultimoId);
@@ -68,16 +83,22 @@ public class IngresosControlador {
 
     public void eliminarIngresoSeleccionado(int filaSeleccionada) {
         if (filaSeleccionada == -1) {
-            JOptionPane.showMessageDialog(null, "Selecciona una fila para eliminar.", "Advertencia", JOptionPane.WARNING_MESSAGE);
+            JOptionPane.showMessageDialog(null,
+                    "Selecciona una fila para eliminar.",
+                    "Advertencia",
+                    JOptionPane.WARNING_MESSAGE);
             return;
         }
 
-        int confirmar = JOptionPane.showConfirmDialog(null, "¿Seguro que deseas eliminar este ingreso?", "Confirmar eliminación", JOptionPane.YES_NO_OPTION);
+        int confirmar = JOptionPane.showConfirmDialog(null,
+                "¿Seguro que deseas eliminar este ingreso?",
+                "Confirmar eliminación",
+                JOptionPane.YES_NO_OPTION);
         if (confirmar != JOptionPane.YES_OPTION) {
             return;
         }
 
-        ArrayList<Transaccion> lista = TransaccionDAO.getTransaccionesPorUsuario(usuario.getId());
+        List<Transaccion> lista = TransaccionDAO.getTransaccionesPorUsuario(usuario.getId());
         int contador = -1;
         int idReal = -1;
 
@@ -86,7 +107,7 @@ public class IngresosControlador {
             if (t.getEsIngreso() == 1) {
                 contador++;
                 if (contador == filaSeleccionada) {
-                    idReal = t.getId(); // ✅ usamos el nuevo campo `id`
+                    idReal = t.getId();
                     break;
                 }
             }
@@ -103,7 +124,7 @@ public class IngresosControlador {
 
     public void cargarIngresos() {
         vista.limpiarTabla();
-        ArrayList<Transaccion> ingresos = TransaccionDAO.getTransaccionesPorUsuario(usuario.getId());
+        List<Transaccion> ingresos = TransaccionDAO.getTransaccionesPorUsuario(usuario.getId());
 
         // Debug
         System.out.println("🧪 Usuario ID: " + usuario.getId());

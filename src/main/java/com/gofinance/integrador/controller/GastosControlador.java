@@ -7,7 +7,7 @@ import com.gofinance.integrador.view.VentanaGastos;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
-import java.util.ArrayList;
+import java.util.List;
 
 public class GastosControlador {
 
@@ -23,6 +23,7 @@ public class GastosControlador {
 
     public void registrarGasto(String fecha, String nombre, String categoria, String valor) {
         float monto;
+        int idCat = CategoriaControlador.getIdCategoriaGasto(categoria);
         try {
             monto = Float.parseFloat(valor);
         } catch (NumberFormatException e) {
@@ -35,7 +36,7 @@ public class GastosControlador {
                 nombre,
                 categoria,
                 monto,
-                1, // fkcategoria
+                idCat, // fkcategoria
                 1, // fkmetodo_pago
                 usuario.getId(),
                 0 // esIngreso = 0 (gasto)
@@ -57,7 +58,7 @@ public class GastosControlador {
 
     public void cargarGastos() {
         vista.limpiarTabla();
-        ArrayList<Transaccion> lista = TransaccionDAO.getTransaccionesPorUsuario(usuario.getId());
+        List<Transaccion> lista = TransaccionDAO.getTransaccionesPorUsuario(usuario.getId());
         DefaultTableModel modelo = vista.getModeloTabla();
 
         for (int i = 0; i < lista.size(); i++) {
@@ -83,10 +84,10 @@ public class GastosControlador {
         }
 
         // Obtener ID real de la transacción desde la posición en tabla
-        ArrayList<Transaccion> lista = TransaccionDAO.getTransaccionesPorUsuario(usuario.getId());
+        List<Transaccion> lista = TransaccionDAO.getTransaccionesPorUsuario(usuario.getId());
         int contador = -1;
         int idReal = -1;
-
+        
         for (Transaccion t : lista) {
             if (t.getEsIngreso() == 0) {
                 contador++;
