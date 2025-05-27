@@ -1,6 +1,7 @@
 package com.gofinance.integrador.model;
 
 public class Transaccion {
+    private int id; // NUEVO: identificador único de la transacción
     private String fecha;
     private String nombre;
     private String descripcion;
@@ -9,85 +10,93 @@ public class Transaccion {
     private int fkMetodoPago;
     private int fkUsuario;
     private int esIngreso;
-    
+
     public Transaccion() {
     }
-    
-    public Transaccion(String fecha, String nombre, String descripcion, float monto, int fkCategoria, int fkMetodoPago,
-            int fkUsuario,
-            int esIngreso) {
+
+    public Transaccion(String fecha, String nombre, String descripcion, float monto,
+                       int fkCategoria, int fkMetodoPago, int fkUsuario, int esIngreso) {
         this.fecha = fecha;
-        this.fkCategoria = fkCategoria;
-        this.fkUsuario = fkUsuario;
-        this.fkMetodoPago = fkMetodoPago;
-        this.monto = monto;
         this.nombre = nombre;
         this.descripcion = descripcion;
+        this.monto = monto;
+        this.fkCategoria = fkCategoria;
+        this.fkMetodoPago = fkMetodoPago;
+        this.fkUsuario = fkUsuario;
         this.esIngreso = esIngreso;
     }
 
+    // ✅ Getter y setter del ID
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    // Resto de getters y setters
     public String getFecha() {
         return fecha;
-    }
-
-    public String getNombre() {
-        return nombre;
-    }
-
-    public String getDescripcion() {
-        return descripcion;
-    }
-
-    public float getMonto() {
-        return monto;
-    }
-
-    public int getFkCategoria() {
-        return fkCategoria;
-    }
-
-    public int getFkMetodoPago() {
-        return fkMetodoPago;
-    }
-
-    public int getFkUsuario() {
-        return fkUsuario;
-    }
-
-    public int getEsIngreso() {
-        return esIngreso;
     }
 
     public void setFecha(String fecha) {
         this.fecha = fecha;
     }
 
+    public String getNombre() {
+        return nombre;
+    }
+
     public void setNombre(String nombre) {
         this.nombre = nombre;
     }
 
-    public void setMonto(float monto) {
-        this.monto = monto;
-    }
-
-    public void setFkCategoria(int fkCategoria) {
-        this.fkCategoria = fkCategoria;
-    }
-
-    public void setFkMetodoPago(int fkMetodoPago) {
-        this.fkMetodoPago = fkMetodoPago;
-    }
-
-    public void setFkUsuario(int fkUsuario) {
-        this.fkUsuario = fkUsuario;
+    public String getDescripcion() {
+        return descripcion;
     }
 
     public void setDescripcion(String descripcion) {
         this.descripcion = descripcion;
     }
 
+    public float getMonto() {
+        return monto;
+    }
+
+    public void setMonto(float monto) {
+        this.monto = monto;
+    }
+
+    public int getFkCategoria() {
+        return fkCategoria;
+    }
+
+    public void setFkCategoria(int fkCategoria) {
+        this.fkCategoria = fkCategoria;
+    }
+
+    public int getFkMetodoPago() {
+        return fkMetodoPago;
+    }
+
+    public void setFkMetodoPago(int fkMetodoPago) {
+        this.fkMetodoPago = fkMetodoPago;
+    }
+
+    public int getFkUsuario() {
+        return fkUsuario;
+    }
+
+    public void setFkUsuario(int fkUsuario) {
+        this.fkUsuario = fkUsuario;
+    }
+
+    public int getEsIngreso() {
+        return esIngreso;
+    }
+
     public void setEsIngreso(int esIngreso) {
         this.esIngreso = esIngreso;
     }
-
 }

@@ -1,6 +1,7 @@
 package com.gofinance.integrador.view;
 
 import com.gofinance.integrador.controller.CategoriaControlador;
+import com.gofinance.integrador.controller.GastosControlador;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -22,13 +23,15 @@ public class VentanaGastos extends JPanel {
     private JSpinner datePicker;
     private JPanel panelFormulario;
 
+    private GastosControlador controlador;
+
     public VentanaGastos() {
-       
+
         setLayout(null);
         setPreferredSize(new Dimension(784, 600));
 
         // Tabla de gastos
-        String[] columnas = {"Fecha", "Nombre", "Categoria", "Valor (€)"};
+        String[] columnas = {"Fecha", "Nombre", "Categoría", "Valor (€)"};
         modeloTabla = new DefaultTableModel(columnas, 0);
         tablaGastos = new JTable(modeloTabla);
         JScrollPane scrollTabla = new JScrollPane(tablaGastos);
@@ -37,16 +40,18 @@ public class VentanaGastos extends JPanel {
 
         // Botón Eliminar fila
         btnEliminarSeleccionada = new JButton("Eliminar fila seleccionada");
-        btnEliminarSeleccionada.setFont(new Font("Tahoma", Font.BOLD, 16));
+        btnEliminarSeleccionada.setFont(new Font("Arial", Font.BOLD, 16));
         btnEliminarSeleccionada.setBackground(Color.RED);
         btnEliminarSeleccionada.setForeground(Color.WHITE);
         btnEliminarSeleccionada.setBounds(439, 286, 311, 30);
-        btnEliminarSeleccionada.addActionListener(e -> {
-            int filaSeleccionada = tablaGastos.getSelectedRow();
-            if (filaSeleccionada != -1) {
-                modeloTabla.removeRow(filaSeleccionada);
-            } else {
-                JOptionPane.showMessageDialog(this, "Selecciona una fila para eliminar.", "Advertencia", JOptionPane.WARNING_MESSAGE);
+        btnEliminarSeleccionada.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                int filaSeleccionada = tablaGastos.getSelectedRow();
+                if (controlador != null) {
+                	controlador.eliminarGastoSeleccionado(filaSeleccionada);
+                } else {
+                    JOptionPane.showMessageDialog(VentanaGastos.this, "Selecciona una fila para eliminar.", "Advertencia", JOptionPane.WARNING_MESSAGE);
+                }
             }
         });
         add(btnEliminarSeleccionada);
@@ -56,50 +61,40 @@ public class VentanaGastos extends JPanel {
         panelFormulario.setBounds(50, 326, 700, 200);
 
         JLabel lblFecha = new JLabel("Fecha:");
-        lblFecha.setFont(new Font("Tahoma", Font.PLAIN, 14));
         lblFecha.setBounds(0, 0, 100, 25);
         panelFormulario.add(lblFecha);
         SpinnerDateModel dateModel = new SpinnerDateModel();
         datePicker = new JSpinner(dateModel);
-        datePicker.setFont(new Font("Tahoma", Font.PLAIN, 14));
         datePicker.setEditor(new JSpinner.DateEditor(datePicker, "dd/MM/yyyy"));
         datePicker.setBounds(120, 0, 253, 25);
         panelFormulario.add(datePicker);
 
         JLabel lblNombre = new JLabel("Nombre:");
-        lblNombre.setFont(new Font("Tahoma", Font.PLAIN, 14));
         lblNombre.setBounds(0, 35, 100, 25);
         panelFormulario.add(lblNombre);
         txtNombre = new JTextField();
-        txtNombre.setFont(new Font("Tahoma", Font.PLAIN, 14));
         txtNombre.setBounds(120, 35, 253, 25);
         panelFormulario.add(txtNombre);
 
-        JLabel lblCategoria = new JLabel("Categoria:");
-        lblCategoria.setFont(new Font("Tahoma", Font.PLAIN, 14));
+        JLabel lblCategoria = new JLabel("Categoría:");
         lblCategoria.setBounds(0, 70, 100, 25);
         panelFormulario.add(lblCategoria);
         comboBoxCategoria = new JComboBox<>();
-        comboBoxCategoria.setFont(new Font("Tahoma", Font.PLAIN, 14));
-        for (String categoria : CategoriaControlador.obtenerCategoriasGastos()) {
-            comboBoxCategoria.addItem(categoria);
+        String[] categorias = CategoriaControlador.obtenerCategoriasGastos();
+        for (int i = 0; i < categorias.length; i++) {
+            comboBoxCategoria.addItem(categorias[i]);
         }
         comboBoxCategoria.setBounds(120, 70, 253, 25);
         panelFormulario.add(comboBoxCategoria);
 
         JLabel lblValor = new JLabel("Valor (€):");
-        lblValor.setFont(new Font("Tahoma", Font.PLAIN, 14));
         lblValor.setBounds(0, 105, 100, 25);
         panelFormulario.add(lblValor);
         txtValor = new JTextField();
-        txtValor.setFont(new Font("Tahoma", Font.PLAIN, 14));
         txtValor.setBounds(120, 105, 253, 25);
         panelFormulario.add(txtValor);
 
         btnAniadir = new JButton("Añadir");
-        btnAniadir.setFont(new Font("Tahoma", Font.BOLD, 16));
-        btnAniadir.setBackground(new Color(0, 148, 255));
-        btnAniadir.setForeground(Color.WHITE);
         btnAniadir.setBounds(120, 145, 253, 30);
         panelFormulario.add(btnAniadir);
 
@@ -108,16 +103,19 @@ public class VentanaGastos extends JPanel {
 
         // Botón Registrar
         btnRegistrar = new JButton("Registrar");
-        btnRegistrar.setFont(new Font("Tahoma", Font.BOLD, 16));
+        btnRegistrar.setBounds(50, 286, 371, 30);
         btnRegistrar.setBackground(new Color(0, 224, 131));
         btnRegistrar.setForeground(Color.WHITE);
-        btnRegistrar.setBounds(50, 286, 371, 30);
-        btnRegistrar.addActionListener(e -> panelFormulario.setVisible(true));
+        btnRegistrar.setFont(new Font("Arial", Font.BOLD, 16));
+        btnRegistrar.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                panelFormulario.setVisible(true);
+            }
+        });
         add(btnRegistrar);
 
-        // Lógica botón Añadir
+        // Botón Añadir → llama al controlador (sin tocar DAO)
         btnAniadir.addActionListener(new ActionListener() {
-            @Override
             public void actionPerformed(ActionEvent e) {
                 String fecha = ((JSpinner.DateEditor) datePicker.getEditor()).getFormat().format(datePicker.getValue());
                 String nombre = txtNombre.getText();
@@ -125,34 +123,36 @@ public class VentanaGastos extends JPanel {
                 String valor = txtValor.getText();
 
                 if (!nombre.isEmpty() && !valor.isEmpty()) {
-                    aniadirFilaTabla(fecha, nombre, categoria, valor);
-
-                    int resultado = com.gofinance.integrador.database.TransaccionDAO.insertarGastoBasico(fecha, nombre, categoria, valor);
-                    if (resultado > 0) {
-                        JOptionPane.showMessageDialog(null, "Gasto guardado correctamente.", "Añadido", JOptionPane.INFORMATION_MESSAGE);
-                    } else {
-                        JOptionPane.showMessageDialog(null, "No se pudo guardar el gasto.", "Error", JOptionPane.ERROR_MESSAGE);
-                    }
-
+                    controlador.registrarGasto(fecha, nombre, categoria, valor);
                     limpiarCampos();
                     datePicker.setValue(new Date());
                     panelFormulario.setVisible(false);
-
                 } else {
                     JOptionPane.showMessageDialog(VentanaGastos.this, "Por favor completa todos los campos.", "Error", JOptionPane.ERROR_MESSAGE);
                 }
             }
         });
-        
-        cargarGastosDesdeBD();
     }
 
-    public JButton getBtnRegistrar() {
-        return btnRegistrar;
+    public void setControlador(GastosControlador controlador) {
+        this.controlador = controlador;
     }
 
-    public JButton getBtnAniadir() {
-        return btnAniadir;
+    public void aniadirFilaTabla(String fecha, String nombre, String categoria, String valor) {
+        modeloTabla.addRow(new Object[]{fecha, nombre, categoria, valor});
+    }
+
+    public void limpiarCampos() {
+        txtNombre.setText("");
+        txtValor.setText("");
+    }
+
+    public void limpiarTabla() {
+        modeloTabla.setRowCount(0);
+    }
+
+    public DefaultTableModel getModeloTabla() {
+        return modeloTabla;
     }
 
     public String getFechaSeleccionada() {
@@ -170,27 +170,4 @@ public class VentanaGastos extends JPanel {
     public String getValor() {
         return txtValor.getText();
     }
-
-    public void limpiarCampos() {
-        txtNombre.setText("");
-        txtValor.setText("");
-    }
-
-    public void aniadirFilaTabla(String fecha, String nombre, String categoria, String valor) {
-        modeloTabla.addRow(new Object[]{fecha, nombre, categoria, valor});
-    }
-
-    public void cargarGastosDesdeBD() {
-    java.util.List<com.gofinance.integrador.model.Transaccion> lista = com.gofinance.integrador.database.TransaccionDAO.getTransaccionesPorUsuario(1);
-    for (com.gofinance.integrador.model.Transaccion t : lista) {
-        if (t.getEsIngreso() == 0) {
-            modeloTabla.addRow(new Object[]{t.getFecha(), t.getNombre(), t.getDescripcion(), String.format("%.2f €", t.getMonto())});
-        }
-    }
-    
 }
-
-            
-        
-    
-} 

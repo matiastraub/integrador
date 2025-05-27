@@ -83,12 +83,16 @@ public class MainView extends JFrame {
 
         // Instanciar todas las vistas una sola vez
         dashboardView = new DashboardView();
+        new com.gofinance.integrador.controller.DashboardControlador(dashboardView, usuario);
         ingresosView = new IngresosView();
         ventanaGastos = new VentanaGastos();
         rendimientoView = new RendView();
         utilidadesView = new UtilsView();
         ajustesView = new AjustesView();
-
+        //Conectar controladores 
+        //TODO: Ponerlos de la forma tradicional, el de arriba tambien
+        new com.gofinance.integrador.controller.IngresosControlador(ingresosView, usuario);
+        new com.gofinance.integrador.controller.GastosControlador(ventanaGastos, usuario);
         // Agregar vistas al contentPanel
         contentPanel.add(dashboardView, "Dashboard");
         contentPanel.add(ingresosView, "Ingresos");

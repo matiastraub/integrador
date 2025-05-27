@@ -4,87 +4,73 @@ import com.gofinance.integrador.database.TransaccionDAO;
 import com.gofinance.integrador.model.Transaccion;
 import com.gofinance.integrador.model.Usuario;
 import com.gofinance.integrador.view.IngresosView;
-import raven.datetime.DatePicker;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
+import java.util.List;
 
-public class IngresosControlador implements ActionListener {
+/**
+ * Controlador para gestionar operaciones de ingresos siguiendo el estilo clásico MVC.
+ */
+public class IngresosControlador {
 
     private IngresosView vista;
     private Usuario usuario;
-    private DatePicker datePicker;
 
     public IngresosControlador(IngresosView vista, Usuario usuario) {
         this.vista = vista;
         this.usuario = usuario;
         this.vista.setControlador(this);
-        this.datePicker = new DatePicker();
-        this.datePicker.setDateSelectionAble(date -> !date.isAfter(LocalDate.now()));
         cargarIngresos();
     }
 
-    @Override
-    public void actionPerformed(ActionEvent e) {
-        if (e.getSource().equals(vista.getBtnAgregar())) {
-            registrarIngreso();
-        } else if (e.getSource().equals(vista.getBtnEliminar())) {
-            eliminarUltimoIngreso();
-        }
+    /**
+     * Devuelve los nombres de las categorías de ingresos para poblar el combo.
+     */
+    public String[] getNombresCategorias() {
+        // Llama al método estático de CategoriaControlador
+        return CategoriaControlador.obtenerCategoriasIngresos();
     }
 
-    private void registrarIngreso() {
-        String nombre = JOptionPane.showInputDialog(null, "Nombre del ingreso:");
-        if (nombre == null || nombre.trim().isEmpty()) return;
-
-        String montoStr = JOptionPane.showInputDialog(null, "Monto:");
-        if (montoStr == null || montoStr.trim().isEmpty()) return;
-
+    public void registrarIngreso(String fecha, String nombre, String categoria, String valor) {
         float monto;
+        int idCat = CategoriaControlador.getIdCategoriaIngreso(categoria);
         try {
-            monto = Float.parseFloat(montoStr);
-        } catch (NumberFormatException ex) {
+            monto = Float.parseFloat(valor);
+        } catch (NumberFormatException e) {
             JOptionPane.showMessageDialog(null, "Monto inválido.");
             return;
         }
 
-        JOptionPane.showMessageDialog(null, datePicker, "Selecciona la fecha del ingreso", JOptionPane.PLAIN_MESSAGE);
-        LocalDate fechaSeleccionada = datePicker.getSelectedDate();
-        if (fechaSeleccionada == null) {
-            JOptionPane.showMessageDialog(null, "Debes seleccionar una fecha válida.");
-            return;
-        }
-
         Transaccion t = new Transaccion(
-                fechaSeleccionada.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")),
+                fecha,
                 nombre,
-                "Ingreso registrado",
+                categoria,
                 monto,
-                1, // fkCategoria por defecto
-                1, // fkMetodoPago por defecto
-                usuario.getId(), // ← Asociado al usuario logueado
-                1 // esIngreso
+                idCat,
+                1,
+                usuario.getId(),
+                1
         );
 
         int res = TransaccionDAO.crearTransaccion(t);
         if (res > 0) {
             cargarIngresos();
+            JOptionPane.showMessageDialog(null, "Ingreso guardado correctamente.", "Añadido", JOptionPane.INFORMATION_MESSAGE);
         } else {
             JOptionPane.showMessageDialog(null, "Error al registrar ingreso.");
         }
     }
 
-    private void eliminarUltimoIngreso() {
+    public void eliminarUltimoIngreso() {
         DefaultTableModel modelo = vista.getTableModel();
         int filas = modelo.getRowCount();
 
         if (filas > 0) {
-            int confirm = JOptionPane.showConfirmDialog(null, "¿Seguro que quieres eliminar el último ingreso?", "Confirmar", JOptionPane.YES_NO_OPTION);
+            int confirm = JOptionPane.showConfirmDialog(null,
+                    "¿Seguro que quieres eliminar el último ingreso?",
+                    "Confirmar",
+                    JOptionPane.YES_NO_OPTION);
             if (confirm == JOptionPane.YES_OPTION) {
                 int ultimoId = TransaccionDAO.getUltimoIdIngreso(usuario.getId());
                 TransaccionDAO.eliminarTransaccion(ultimoId);
@@ -95,15 +81,62 @@ public class IngresosControlador implements ActionListener {
         }
     }
 
-    private void cargarIngresos() {
+    public void eliminarIngresoSeleccionado(int filaSeleccionada) {
+        if (filaSeleccionada == -1) {
+            JOptionPane.showMessageDialog(null,
+                    "Selecciona una fila para eliminar.",
+                    "Advertencia",
+                    JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        int confirmar = JOptionPane.showConfirmDialog(null,
+                "¿Seguro que deseas eliminar este ingreso?",
+                "Confirmar eliminación",
+                JOptionPane.YES_NO_OPTION);
+        if (confirmar != JOptionPane.YES_OPTION) {
+            return;
+        }
+
+        List<Transaccion> lista = TransaccionDAO.getTransaccionesPorUsuario(usuario.getId());
+        int contador = -1;
+        int idReal = -1;
+
+        for (int i = 0; i < lista.size(); i++) {
+            Transaccion t = lista.get(i);
+            if (t.getEsIngreso() == 1) {
+                contador++;
+                if (contador == filaSeleccionada) {
+                    idReal = t.getId();
+                    break;
+                }
+            }
+        }
+
+        if (idReal != -1) {
+            TransaccionDAO.eliminarTransaccion(idReal);
+            cargarIngresos();
+            JOptionPane.showMessageDialog(null, "Ingreso eliminado correctamente.");
+        } else {
+            JOptionPane.showMessageDialog(null, "No se pudo eliminar el ingreso.");
+        }
+    }
+
+    public void cargarIngresos() {
         vista.limpiarTabla();
-        ArrayList<Transaccion> ingresos = TransaccionDAO.getTransaccionesPorUsuario(usuario.getId());
+        List<Transaccion> ingresos = TransaccionDAO.getTransaccionesPorUsuario(usuario.getId());
+
+        // Debug
+        System.out.println("🧪 Usuario ID: " + usuario.getId());
+        System.out.println("📊 Total transacciones encontradas: " + ingresos.size());
+
         DefaultTableModel modelo = vista.getTableModel();
 
-        for (Transaccion t : ingresos) {
+        for (int i = 0; i < ingresos.size(); i++) {
+            Transaccion t = ingresos.get(i);
             if (t.getEsIngreso() == 1) {
-                String montoStr = "<html><font color='green'>+ " + t.getMonto() + " €</font></html>";
-                modelo.addRow(new Object[]{t.getFecha(), t.getNombre(), "Categoría", montoStr});
+                String montoStr = String.format("+ %.2f €", t.getMonto());
+                modelo.addRow(new Object[]{t.getFecha(), t.getNombre(), t.getDescripcion(), montoStr});
             }
         }
     }

@@ -57,6 +57,12 @@
    			<artifactId>swing-datetime-picker</artifactId>
     		<version>2.0.0</version>
 		</dependency>
-
+		
+		<!-- Swing-Chart (instalación manual con ruta relativa al proyecto) -->
+		<dependency>
+    		<groupId>raven.chart</groupId>
+   			<artifactId>swing-chart</artifactId>
+    		<version>1.1.1</version>
+		</dependency>
     </dependencies>
 </project>
