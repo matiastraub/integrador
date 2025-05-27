@@ -20,14 +20,13 @@ public class AppControlador implements ActionListener {
     private UsuarioDAO usuarioDAO;
     private UsuarioValidacion validador;
 
-    // Controladores Especificos   
+    // Controladores Especificos
     private IngresosControlador ingresosControlador;
     private GastosControlador gastosControlador;
-    private DashboardControlador dashboardControlador;
+    private AjustesControlador ajustesControlador;
     // TODO: private DashboadrControlador dashboardControlador;
     // TODO: ....
 
-  
     private int intentos;
 
     public AppControlador(LoginView lv, SignupView sv) {
@@ -69,7 +68,8 @@ public class AppControlador implements ActionListener {
                         } else {
                             intentos++;
                             if (intentos < MAX_INTENTOS) {
-                                loginView.mostrarError("Contraseña incorrecta. Te quedan " + (MAX_INTENTOS - intentos) + " intentos.");
+                                loginView.mostrarError(
+                                        "Contraseña incorrecta. Te quedan " + (MAX_INTENTOS - intentos) + " intentos.");
                             } else {
                                 loginView.mostrarError("Has agotado todos los intentos.");
                                 System.exit(0);
@@ -80,27 +80,27 @@ public class AppControlador implements ActionListener {
                     }
                 }
 
-            // Abrimos la vista de registro
+                // Abrimos la vista de registro
             } else if (src.equals(loginView.getBtnRegistro())) {
                 loginView.dispose();
                 signupView.setVisible(true);
 
-            // Cancelamos el registro y volvemos al login
+                // Cancelamos el registro y volvemos al login
             } else if (src.equals(signupView.getBtnCancelar())) {
                 signupView.dispose();
                 loginView.setVisible(true);
                 loginView.limpiarCampos();
 
-            // Intentamos registrar al nuevo usuario
+                // Intentamos registrar al nuevo usuario
             } else if (src.equals(signupView.getBtnAceptar())) {
                 Usuario nuevo = signupView.getDatosUsuario();
 
                 if (nuevo != null &&
-                    validador.esValidoNombre(nuevo.getNombre()) &&
-                    validador.esValidoEmail(nuevo.getEmail()) &&
-                    validador.esValidoTel(nuevo.getTelefono()) &&
-                    validador.esValidoPassword(nuevo.getPassword()) &&
-                    validador.esValidoFechaNac(nuevo.getFechaNac())) {
+                        validador.esValidoNombre(nuevo.getNombre()) &&
+                        validador.esValidoEmail(nuevo.getEmail()) &&
+                        validador.esValidoTel(nuevo.getTelefono()) &&
+                        validador.esValidoPassword(nuevo.getPassword()) &&
+                        validador.esValidoFechaNac(nuevo.getFechaNac())) {
 
                     int res = usuarioDAO.crearUsuario(nuevo);
                     if (res == 1) {
@@ -122,15 +122,13 @@ public class AppControlador implements ActionListener {
 
                 if (src.equals(mainView.getBtnDashboard())) {
                     mainView.mostrarVista("Dashboard");
-                    
-                    if (dashboardControlador == null) {
-                        dashboardControlador = new DashboardControlador(mainView.getDashboardView(), mainView.getUsuario());
-                    }
+                    // En el futuro: inicializar dashboardControlador aquí
 
                 } else if (src.equals(mainView.getBtnIngresos())) {
                     mainView.mostrarVista("Ingresos");
                     if (ingresosControlador == null) {
-                        ingresosControlador = new IngresosControlador(mainView.getIngresosView(), mainView.getUsuario());
+                        ingresosControlador = new IngresosControlador(mainView.getIngresosView(),
+                                mainView.getUsuario());
                     }
 
                 } else if (src.equals(mainView.getBtnGastos())) {
@@ -148,10 +146,15 @@ public class AppControlador implements ActionListener {
                     // utilidadesControlador = ...
 
                 } else if (src.equals(mainView.getBtnAjustes())) {
-                    mainView.mostrarVista("Ajustes");
+                    mainView.mostrarVista("Perfil");
+                    // Perfil
+                    if (ajustesControlador == null) {
+                        ajustesControlador = new AjustesControlador(mainView.getAjustesView(),
+                                mainView.getUsuario());
+                    }
                     // ajustesControlador = ...
                 }
             }
         }
     }
-} 
+}
