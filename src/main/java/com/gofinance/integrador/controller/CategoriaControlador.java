@@ -22,7 +22,7 @@ public class CategoriaControlador implements ActionListener {
         GASTOS_MAP.put("Ocio",         3);
         GASTOS_MAP.put("Educación",    4);
         GASTOS_MAP.put("Salud",        5);
-        GASTOS_MAP.put("Otros",        6);
+        GASTOS_MAP.put("Otro",        6);
 
         // Inicialización de categorías de ingreso
         INGRESOS_MAP.put("Salario",     1);
