@@ -295,8 +295,6 @@ public class AjustesView extends JPanel {
         campoEmail.setForeground(col);
         campoTelefono.setEditable(bool);
         campoTelefono.setForeground(col);
-        campoFechaNac.setEditable(bool);
-        campoFechaNac.setForeground(col);
     }
 
     private void hacerTextoEditable() {
