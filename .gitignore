@@ -31,5 +31,9 @@ Thumbs.db
 # Directorios de entorno
 /bin
 
-#Ignorar base de datos
-src/main/resources/data/gofinance.db
+# Ignorar únicamente el fichero de base de datos
+/src/main/resources/data/gofinance.db
+
+# Re-incluir la carpeta data (y todos sus contenidos, excepto lo anterior)
+!/src/main/resources/data/
+!/src/main/resources/data/**
