@@ -5,7 +5,7 @@ public class Transaccion {
     private String fecha;
     private String nombre;
     private String descripcion;
-    private float monto;
+    private double monto;
     private int fkCategoria;
     private int fkMetodoPago;
     private int fkUsuario;
@@ -14,7 +14,7 @@ public class Transaccion {
     public Transaccion() {
     }
 
-    public Transaccion(String fecha, String nombre, String descripcion, float monto,
+    public Transaccion(String fecha, String nombre, String descripcion, double monto,
                        int fkCategoria, int fkMetodoPago, int fkUsuario, int esIngreso) {
         this.fecha = fecha;
         this.nombre = nombre;
@@ -60,7 +60,7 @@ public class Transaccion {
         this.descripcion = descripcion;
     }
 
-    public float getMonto() {
+    public double getMonto() {
         return monto;
     }
 
