@@ -23,6 +23,7 @@ public class AppControlador implements ActionListener {
     // Controladores Especificos   
     private IngresosControlador ingresosControlador;
     private GastosControlador gastosControlador;
+    private DashboardControlador dashboardControlador;
     // TODO: private DashboadrControlador dashboardControlador;
     // TODO: ....
 
@@ -121,7 +122,10 @@ public class AppControlador implements ActionListener {
 
                 if (src.equals(mainView.getBtnDashboard())) {
                     mainView.mostrarVista("Dashboard");
-                    // En el futuro: inicializar dashboardControlador aquí
+                    
+                    if (dashboardControlador == null) {
+                        dashboardControlador = new DashboardControlador(mainView.getDashboardView(), mainView.getUsuario());
+                    }
 
                 } else if (src.equals(mainView.getBtnIngresos())) {
                     mainView.mostrarVista("Ingresos");

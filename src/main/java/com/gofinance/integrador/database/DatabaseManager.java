@@ -1,6 +1,4 @@
 package com.gofinance.integrador.database;
-
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.sql.Connection;

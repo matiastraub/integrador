@@ -1,28 +1,26 @@
 package com.gofinance.integrador.model;
 
 public class Categoria {
+    private int id;
     private String nombre;
-    private String descripcion;
 
-    public Categoria(String descripcion, String nombre) {
-        this.descripcion = descripcion;
+    // Constructor para mapear desde la BD 
+    public Categoria(int id, String nombre) {
+        this.id = id;
         this.nombre = nombre;
     }
 
+    // Getters y setters
+    public int getId() {
+        return id;
+    }
+    public void setId(int id) {
+        this.id = id;
+    }
     public String getNombre() {
         return nombre;
     }
-
-    public String getDescripcion() {
-        return descripcion;
-    }
-
     public void setNombre(String nombre) {
         this.nombre = nombre;
     }
-
-    public void setDescripcion(String descripcion) {
-        this.descripcion = descripcion;
-    }
-
 }
