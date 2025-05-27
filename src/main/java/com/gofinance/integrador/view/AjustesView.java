@@ -3,6 +3,8 @@ package com.gofinance.integrador.view;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -13,6 +15,8 @@ import javax.swing.JTextField;
 
 import com.gofinance.integrador.controller.AjustesControlador;
 import com.gofinance.integrador.model.Usuario;
+
+import raven.datetime.DatePicker;
 
 public class AjustesView extends JPanel {
     public Usuario usuario;
@@ -32,8 +36,9 @@ public class AjustesView extends JPanel {
     private JTextField campoFechaNac;
     private JPasswordField campoPasswordActual;
     private JPasswordField campoPassword;
-    private JPasswordField campoRepeatPassword;
+    private JPasswordField campoConfirmPassword;
     private boolean isOpenPasswordField = false;
+    private DatePicker datePicker;
 
     private JLabel[] etiquetas = {
             lblNombre, lblApellido, lblEmail, lblTelefono, lblFechaNac
@@ -110,11 +115,21 @@ public class AjustesView extends JPanel {
         campoFechaNac.setBounds(START_FIELD_X, START_HEIGHT_Y + (4 * 40), MIN_LENGTH_FIELDS, MIN_HEIGHT);
         campoFechaNac.setEditable(false);
         campoFechaNac.setForeground(COLOR_GREY);
+        datePicker = new DatePicker();
+        datePicker.setDateSelectionAble(date -> !date.isAfter(LocalDate.now()));
+        datePicker.addDateSelectionListener(evt -> {
+            LocalDate fecha = datePicker.getSelectedDate();
+            if (fecha != null) {
+                campoFechaNac.setText(fecha.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
+            }
+        });
+
         panel.add(campoFechaNac, "span 2, growx");
 
         createBtnFechaNac();
 
         createPasswordSection();
+
         // =================== BOTONES ===================
 
         crearBotones();
@@ -138,7 +153,7 @@ public class AjustesView extends JPanel {
         lblPassword.setVisible(false);
         campoPassword.setVisible(false);
         lblRepeatPassword.setVisible(false);
-        campoRepeatPassword.setVisible(false);
+        campoConfirmPassword.setVisible(false);
     }
 
     private void showPasswordFields() {
@@ -147,7 +162,7 @@ public class AjustesView extends JPanel {
         lblPassword.setVisible(true);
         campoPassword.setVisible(true);
         lblRepeatPassword.setVisible(true);
-        campoRepeatPassword.setVisible(true);
+        campoConfirmPassword.setVisible(true);
     }
 
     private void createPasswordSection() {
@@ -185,17 +200,17 @@ public class AjustesView extends JPanel {
 
         panel.add(campoPassword, "span 2, growx");
 
-        campoRepeatPassword = new JPasswordField();
-        campoRepeatPassword.setBounds(START_FIELD_X, START_HEIGHT_Y + 40 * (camposTexto.length + 4),
+        campoConfirmPassword = new JPasswordField();
+        campoConfirmPassword.setBounds(START_FIELD_X, START_HEIGHT_Y + 40 * (camposTexto.length + 4),
                 MIN_LENGTH_FIELDS, MIN_HEIGHT);
-        campoRepeatPassword.setEditable(true);
-        campoRepeatPassword.setForeground(COLOR_GREY);
+        campoConfirmPassword.setEditable(true);
+        campoConfirmPassword.setForeground(COLOR_GREY);
 
         lblRepeatPassword = new JLabel("Repetir Contraseña:");
         lblRepeatPassword.setBounds(START_LABEL_X, START_HEIGHT_Y + 40 * (camposTexto.length + 4),
                 MIN_LENGTH_LABEL, MIN_HEIGHT);
         panel.add(lblRepeatPassword, "span 2");
-        panel.add(campoRepeatPassword, "span 2, growx");
+        panel.add(campoConfirmPassword, "span 2, growx");
         hidePasswordFields();
     }
 
@@ -255,6 +270,10 @@ public class AjustesView extends JPanel {
         btnCambiarPassword.setBackground(Color.BLUE); // Habilitar el botón de cambiar contraseña
     }
 
+    public boolean getIsOpenPasswordField() {
+        return isOpenPasswordField;
+    }
+
     public void togglePasswordFields() {
         if (isOpenPasswordField) {
             hidePasswordFields();
@@ -276,8 +295,6 @@ public class AjustesView extends JPanel {
         campoEmail.setForeground(col);
         campoTelefono.setEditable(bool);
         campoTelefono.setForeground(col);
-        campoFechaNac.setEditable(bool);
-        campoFechaNac.setForeground(col);
     }
 
     private void hacerTextoEditable() {
@@ -318,7 +335,7 @@ public class AjustesView extends JPanel {
         if (!validacionResultado.equals("success")) {
             mostrarError(validacionResultado);
         } else {
-            mostrarMensaje("Cambios guardados correctamente");
+            mostrarMensaje("Usuario actualizado correctamente");
             btnCancelar.setEnabled(false);
         }
     }
@@ -336,6 +353,10 @@ public class AjustesView extends JPanel {
         System.out.println("Datos del usuario original restaurados");
     }
 
+    public String getConfirmedPassword() {
+        return new String(campoConfirmPassword.getPassword());
+    }
+
     public Usuario getUsuario() {
         // Aquí se puede implementar un método para obtener los datos del usuario
         // desde los campos de texto
@@ -345,18 +366,9 @@ public class AjustesView extends JPanel {
         String email = campoEmail.getText();
         String telefono = campoTelefono.getText();
         String fechaNac = campoFechaNac.getText();
+
         String password = new String(campoPassword.getPassword());
-        String repeatPassword = new String(campoRepeatPassword.getPassword());
 
-        if (nombre.isEmpty() || apellido.isEmpty() || email.isEmpty() || telefono.isEmpty() || fechaNac.isEmpty()) {
-            mostrarError("Todos los campos son obligatorios");
-            return null;
-        }
-
-        if (!password.equals(repeatPassword) && !password.isEmpty()) {
-            mostrarError("Las contraseñas no coinciden");
-            return null;
-        }
         usuario.setNombre(nombre);
         usuario.setApellido(apellido);
         usuario.setEmail(email);
@@ -387,27 +399,16 @@ public class AjustesView extends JPanel {
         System.out.println("Cambios cancelados");
     }
 
-    public boolean validarPasswordActual(String storedPassword) {
-        if (!isOpenPasswordField) {
-            return true;
-        }
-        if (campoPasswordActual.getPassword().length == 0) {
-            mostrarError("Debe ingresar la contraseña actual.");
-            return false;
-        }
-        String actualPasswordInput = new String(campoPasswordActual.getPassword());
+    public String getCampoPasswordActual() {
+        return new String(campoPasswordActual.getPassword());
+    }
 
-        if (actualPasswordInput.isEmpty()) {
-            mostrarError("Debe ingresar la contraseña actual.");
-            return false;
-        }
+    public String getCampoPassword() {
+        return new String(campoPassword.getPassword());
+    }
 
-        if (!actualPasswordInput.equals(storedPassword)) {
-            mostrarError("La contraseña actual no es correcta.");
-            return false;
-        }
-
-        return true;
+    public String getCampoConfirmPassword() {
+        return new String(campoConfirmPassword.getPassword());
     }
 
     public void setUsuario(Usuario usuarioCtl) {
@@ -424,4 +425,9 @@ public class AjustesView extends JPanel {
             mostrarError("Usuario no válido");
         }
     }
+
+    public DatePicker getDatePicker() {
+        return datePicker;
+    }
+
 }

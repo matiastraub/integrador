@@ -21,17 +21,17 @@ public class TransaccionDAO {
      */
     public static void createTable() {
         String sql = "CREATE TABLE IF NOT EXISTS transaccion ("
-                   + "id INTEGER PRIMARY KEY AUTOINCREMENT, "
-                   + "fecha TEXT NOT NULL, "
-                   + "nombre TEXT NOT NULL, "
-                   + "descripcion TEXT, "
-                   + "monto REAL NOT NULL, "
-                   + "fkcategoria INTEGER NOT NULL, "
-                   + "fkmetodo_pago INTEGER NOT NULL, "
-                   + "fkusuario INTEGER NOT NULL, "
-                   + "es_ingreso INTEGER NOT NULL DEFAULT 0)";
+                + "id INTEGER PRIMARY KEY AUTOINCREMENT, "
+                + "fecha TEXT NOT NULL, "
+                + "nombre TEXT NOT NULL, "
+                + "descripcion TEXT, "
+                + "monto REAL NOT NULL, "
+                + "fkcategoria INTEGER NOT NULL, "
+                + "fkmetodo_pago INTEGER NOT NULL, "
+                + "fkusuario INTEGER NOT NULL, "
+                + "es_ingreso INTEGER NOT NULL DEFAULT 0)";
         try (Connection conn = DatabaseManager.connect();
-             Statement stmt = conn.createStatement()) {
+                Statement stmt = conn.createStatement()) {
             stmt.execute(sql);
         } catch (SQLException e) {
             System.out.println("Error creando la tabla 'transaccion': " + e.getMessage());
@@ -40,19 +40,20 @@ public class TransaccionDAO {
 
     /**
      * Inserta una transacción genérica.
+     * 
      * @param transaccion Objeto Transaccion con los datos completos.
      * @return número de filas afectadas o -1 si falla.
      */
     public static int crearTransaccion(Transaccion transaccion) {
         int resultado = -1;
         String sql = "INSERT INTO transaccion (fecha, nombre, descripcion, monto, fkcategoria, fkmetodo_pago, fkusuario, es_ingreso) "
-                   + "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+                + "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
         try (Connection conn = DatabaseManager.connect();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+                PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, transaccion.getFecha());
             pstmt.setString(2, transaccion.getNombre());
             pstmt.setString(3, transaccion.getDescripcion());
-            pstmt.setFloat(4, transaccion.getMonto());
+            pstmt.setFloat(4, (float) transaccion.getMonto());
             pstmt.setInt(5, transaccion.getFkCategoria());
             pstmt.setInt(6, transaccion.getFkMetodoPago());
             pstmt.setInt(7, transaccion.getFkUsuario());
@@ -68,7 +69,7 @@ public class TransaccionDAO {
      * Inserta un ingreso usando el nombre de categoría para obtener su ID.
      */
     public static int insertarIngreso(String fecha, String nombre, String categoriaNombre, String descripcion,
-                                      float monto, int fkMetodoPago, int idUsuario) {
+            float monto, int fkMetodoPago, int idUsuario) {
         int filas = 0;
         try {
             int idCategoria = CategoriaDAO.getIdPorNombre(categoriaNombre);
@@ -92,7 +93,7 @@ public class TransaccionDAO {
      * Inserta un gasto usando el nombre de categoría para obtener su ID.
      */
     public static int insertarGasto(String fecha, String nombre, String categoriaNombre, String descripcion,
-                                    float monto, int fkMetodoPago, int idUsuario) {
+            float monto, int fkMetodoPago, int idUsuario) {
         int filas = 0;
         try {
             int idCategoria = CategoriaDAO.getIdPorNombre(categoriaNombre);
@@ -119,7 +120,7 @@ public class TransaccionDAO {
         Transaccion transaccion = null;
         String sql = "SELECT * FROM transaccion WHERE id = ?";
         try (Connection conn = DatabaseManager.connect();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+                PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setInt(1, id);
             ResultSet rs = pstmt.executeQuery();
             if (rs.next()) {
@@ -148,7 +149,7 @@ public class TransaccionDAO {
         List<Transaccion> lista = new ArrayList<Transaccion>();
         String sql = "SELECT * FROM transaccion WHERE fkusuario = ?";
         try (Connection conn = DatabaseManager.connect();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+                PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setInt(1, idUsuario);
             ResultSet rs = pstmt.executeQuery();
             while (rs.next()) {
@@ -174,11 +175,11 @@ public class TransaccionDAO {
      * Actualiza los campos de una transacción.
      */
     public static void actualizarTransaccion(int id, String fecha, String nombre, String descripcion,
-                                             float monto, int fkCategoria, int fkUsuario, int esIngreso) {
+            float monto, int fkCategoria, int fkUsuario, int esIngreso) {
         String sql = "UPDATE transaccion SET fecha = ?, nombre = ?, descripcion = ?, monto = ?, "
-                   + "fkcategoria = ?, fkusuario = ?, es_ingreso = ? WHERE id = ?";
+                + "fkcategoria = ?, fkusuario = ?, es_ingreso = ? WHERE id = ?";
         try (Connection conn = DatabaseManager.connect();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+                PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, fecha);
             pstmt.setString(2, nombre);
             pstmt.setString(3, descripcion);
@@ -202,7 +203,7 @@ public class TransaccionDAO {
     public static void eliminarTransaccion(int id) {
         String sql = "DELETE FROM transaccion WHERE id = ?";
         try (Connection conn = DatabaseManager.connect();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+                PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setInt(1, id);
             int filas = pstmt.executeUpdate();
             if (filas == 0) {
@@ -220,7 +221,7 @@ public class TransaccionDAO {
         int id = -1;
         String sql = "SELECT MAX(id) FROM transaccion WHERE es_ingreso = 1 AND fkusuario = ?";
         try (Connection conn = DatabaseManager.connect();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+                PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setInt(1, idUsuario);
             ResultSet rs = pstmt.executeQuery();
             if (rs.next()) {
@@ -239,7 +240,7 @@ public class TransaccionDAO {
         int id = -1;
         String sql = "SELECT MAX(id) FROM transaccion WHERE es_ingreso = 0 AND fkusuario = ?";
         try (Connection conn = DatabaseManager.connect();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+                PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setInt(1, idUsuario);
             ResultSet rs = pstmt.executeQuery();
             if (rs.next()) {
