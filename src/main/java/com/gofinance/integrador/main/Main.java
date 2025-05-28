@@ -1,8 +1,8 @@
 package com.gofinance.integrador.main;
 
 import java.awt.EventQueue;
-import javax.swing.UIManager;
 
+import com.formdev.flatlaf.FlatLaf;    
 import com.formdev.flatlaf.themes.FlatMacDarkLaf;
 import com.gofinance.integrador.controller.AppControlador;
 import com.gofinance.integrador.database.DatabaseInitializer;
@@ -12,9 +12,13 @@ import com.gofinance.integrador.view.SignupView;
 public class Main {
 
     public static void main(String[] args) {
+        // registra carpeta de propiedades en src/main/resources/themes
+        FlatLaf.registerCustomDefaultsSource("themes");
+
         // tema visual
         try {
-            UIManager.setLookAndFeel(new FlatMacDarkLaf());
+            // carga tu FlatMacDarkLaf.properties y aplica el LAF
+            FlatMacDarkLaf.setup();
         } catch (Exception e) {
             System.out.println("No se pudo cargar FlatLaf: " + e.getMessage());
         }
