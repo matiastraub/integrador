@@ -6,12 +6,12 @@ import raven.chart.line.LineChart;
 import raven.chart.pie.PieChart;
 import raven.chart.data.category.DefaultCategoryDataset;
 import raven.chart.data.pie.DefaultPieDataset;
-import com.formdev.flatlaf.FlatClientProperties;
 
 import javax.swing.*;
 import java.awt.*;
 import java.text.DecimalFormat;
 
+@SuppressWarnings("serial")
 public class DashboardView extends JPanel {
 
     private LineChart lineChart;

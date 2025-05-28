@@ -21,7 +21,7 @@ public class MainView extends JFrame {
     private JButton btnIngresos;
     private JButton btnGastos;
     private JButton btnRendimiento;
-    private JButton btnUtilidades; // Calculadora
+    private JButton btnUtilidades;
     private JButton btnAjustes;
 
     // Vistas individuales como atributos privados
@@ -32,7 +32,6 @@ public class MainView extends JFrame {
     private UtilsView utilidadesView;
     private AjustesView ajustesView;
 
-   
     public MainView(Usuario usuario) {
         this.usuario = usuario;
 
@@ -66,7 +65,7 @@ public class MainView extends JFrame {
         btnGastos = new JButton("Gastos");
         btnRendimiento = new JButton("Rendimiento");
         btnUtilidades = new JButton("Utilidades");
-        btnAjustes = new JButton("Perfil"); // He cambiando a perfil debido a que así se llamara en el menu 
+        btnAjustes = new JButton("Perfil");
 
         sidePanel.add(profilePic, "align center");
         sidePanel.add(userName, "align center");
@@ -81,18 +80,14 @@ public class MainView extends JFrame {
         // Panel central con CardLayout
         contentPanel = new JPanel(new CardLayout());
 
-        // Instanciar todas las vistas una sola vez
+        // SOLO instanciar las vistas, NO los controladores aquí, para respetar el MVC
         dashboardView = new DashboardView();
-        new com.gofinance.integrador.controller.DashboardControlador(dashboardView, usuario);
         ingresosView = new IngresosView();
         ventanaGastos = new VentanaGastos();
         rendimientoView = new RendView();
         utilidadesView = new UtilsView();
         ajustesView = new AjustesView();
-        //Conectar controladores 
-        //TODO: Ponerlos de la forma tradicional, el de arriba tambien
-        new com.gofinance.integrador.controller.IngresosControlador(ingresosView, usuario);
-        new com.gofinance.integrador.controller.GastosControlador(ventanaGastos, usuario);
+
         // Agregar vistas al contentPanel
         contentPanel.add(dashboardView, "Dashboard");
         contentPanel.add(ingresosView, "Ingresos");
@@ -106,13 +101,13 @@ public class MainView extends JFrame {
         add(contentPanel, BorderLayout.CENTER);
     }
 
-    //Mostrar una vista según nombre
+    // Mostrar una vista según nombre
     public void mostrarVista(String nombreVista) {
         CardLayout cl = (CardLayout) contentPanel.getLayout();
         cl.show(contentPanel, nombreVista);
     }
 
-    //Inyectar controlador principal (AppControlador)
+    // Inyectar controlador principal (AppControlador)
     public void setControlador(ActionListener c) {
         btnDashboard.addActionListener(c);
         btnIngresos.addActionListener(c);
@@ -122,7 +117,7 @@ public class MainView extends JFrame {
         btnAjustes.addActionListener(c);
     }
 
-    //Getters para que AppControlador compare eventos
+    // Getters para que AppControlador compare eventos
     public JButton getBtnDashboard() { return btnDashboard; }
     public JButton getBtnIngresos() { return btnIngresos; }
     public JButton getBtnGastos() { return btnGastos; }
@@ -130,7 +125,7 @@ public class MainView extends JFrame {
     public JButton getBtnUtilidades() { return btnUtilidades; }
     public JButton getBtnAjustes() { return btnAjustes; }
 
-    //Getters públicos para los controladores específicos
+    // Getters públicos para los controladores específicos
     public IngresosView getIngresosView() { return ingresosView; }
     public DashboardView getDashboardView() { return dashboardView; }
     public VentanaGastos getGastosView() { return ventanaGastos; }
@@ -138,8 +133,7 @@ public class MainView extends JFrame {
     public UtilsView getUtilidadesView() { return utilidadesView; }
     public AjustesView getAjustesView() { return ajustesView; }
 
-	public Usuario getUsuario() {
-		// TODO Auto-generated method stub
-		return usuario;
-	}
+    public Usuario getUsuario() {
+        return usuario;
+    }
 }

@@ -20,12 +20,11 @@ public class AppControlador implements ActionListener {
     private UsuarioDAO usuarioDAO;
     private UsuarioValidacion validador;
 
-    // Controladores Especificos
+    // Controladores Específicos - aquí los guardamos como atributos
+    private DashboardControlador dashboardControlador;
     private IngresosControlador ingresosControlador;
     private GastosControlador gastosControlador;
     private AjustesControlador ajustesControlador;
-    // TODO: private DashboadrControlador dashboardControlador;
-    // TODO: ....
 
     private int intentos;
 
@@ -64,6 +63,10 @@ public class AppControlador implements ActionListener {
                             loginView.dispose();
                             mainView = new MainView(dbUser);
                             mainView.setControlador(this);
+                            
+                            // INSTANCIAR TODOS LOS CONTROLADORES AL CREAR MAINVIEW
+                            inicializarControladores();
+                            
                             mainView.setVisible(true);
                         } else {
                             intentos++;
@@ -122,20 +125,18 @@ public class AppControlador implements ActionListener {
 
                 if (src.equals(mainView.getBtnDashboard())) {
                     mainView.mostrarVista("Dashboard");
-                    // En el futuro: inicializar dashboardControlador aquí
+                    // El dashboard ya está inicializado, solo actualizamos datos
+                    if (dashboardControlador != null) {
+                        dashboardControlador.actualizarDatos();
+                    }
 
                 } else if (src.equals(mainView.getBtnIngresos())) {
                     mainView.mostrarVista("Ingresos");
-                    if (ingresosControlador == null) {
-                        ingresosControlador = new IngresosControlador(mainView.getIngresosView(),
-                                mainView.getUsuario());
-                    }
+                    // Ya no necesitamos verificar null, está inicializado
 
                 } else if (src.equals(mainView.getBtnGastos())) {
                     mainView.mostrarVista("Gastos");
-                    if (gastosControlador == null) {
-                        gastosControlador = new GastosControlador(mainView.getGastosView(), mainView.getUsuario());
-                    }
+                    // Ya no necesitamos verificar null, está inicializado
 
                 } else if (src.equals(mainView.getBtnRendimiento())) {
                     mainView.mostrarVista("Rendimiento");
@@ -147,14 +148,38 @@ public class AppControlador implements ActionListener {
 
                 } else if (src.equals(mainView.getBtnAjustes())) {
                     mainView.mostrarVista("Perfil");
-                    // Perfil
-                    if (ajustesControlador == null) {
-                        ajustesControlador = new AjustesControlador(mainView.getAjustesView(),
-                                mainView.getUsuario());
-                    }
-                    // ajustesControlador = ...
+                    // Ya no necesitamos verificar null, está inicializado
                 }
             }
         }
+    }
+
+    /**
+     * Inicializa todos los controladores de una vez cuando se crea MainView
+     */
+    private void inicializarControladores() {
+        if (mainView != null) {
+            Usuario usuario = mainView.getUsuario();
+            
+            // Inicializar todos los controladores
+            dashboardControlador = new DashboardControlador(mainView.getDashboardView(), usuario);
+            ingresosControlador = new IngresosControlador(mainView.getIngresosView(), usuario);
+            gastosControlador = new GastosControlador(mainView.getGastosView(), usuario);
+            ajustesControlador = new AjustesControlador(mainView.getAjustesView(), usuario);
+        }
+    }
+
+    /**
+     * Método público para actualizar el dashboard desde otros controladores
+     */
+    public void actualizarDashboard() {
+        if (dashboardControlador != null) {
+            dashboardControlador.actualizarDatos();
+        }
+    }
+
+    // Getters para que otros controladores puedan comunicarse
+    public DashboardControlador getDashboardControlador() {
+        return dashboardControlador;
     }
 }

@@ -44,7 +44,7 @@ public class GastosControlador {
 
         int resultado = TransaccionDAO.crearTransaccion(t);
         if (resultado > 0) {
-            vista.aniadirFilaTabla(fecha, nombre, categoria, valor);
+            cargarGastos();
             JOptionPane.showMessageDialog(null, "Gasto guardado correctamente.", "Añadido", JOptionPane.INFORMATION_MESSAGE);
 
             // Debug

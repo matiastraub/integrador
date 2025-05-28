@@ -10,6 +10,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Date;
 
+@SuppressWarnings("serial")
 public class VentanaGastos extends JPanel {
 
     private JTable tablaGastos;
