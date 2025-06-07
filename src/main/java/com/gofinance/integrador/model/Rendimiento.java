@@ -1,117 +1,69 @@
 package com.gofinance.integrador.model;
 
-
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.List;
 
+/**
+ * Modelo para contener datos de rendimiento mensual: ingresos, gastos, balance y ahorro.
+ */
 public class Rendimiento {
+    private LocalDate mes;
+    private List<Transaccion> transacciones;
+    private double totalIngreso;
+    private double totalGasto;
+    private double balance;
+    private double ahorro;
 
-	private ArrayList<Transaccion> transacciones;
-	private double totalIngreso; 
-	private double totalGasto;  
-	private double balance;     
+    public Rendimiento() {
+        this.mes = LocalDate.now().withDayOfMonth(1);
+        this.transacciones = new ArrayList<>();
+    }
 
-	public Rendimiento() {
+    /**
+     * Constructor para datos ya calculados.
+     * @param mes mes de los datos (día=1)
+     * @param totalIngreso suma de ingresos del mes
+     * @param totalGasto suma de gastos del mes
+     */
+    public Rendimiento(LocalDate mes, double totalIngreso, double totalGasto) {
+        this.mes = mes.withDayOfMonth(1);
+        this.transacciones = new ArrayList<>();
+        this.totalIngreso = totalIngreso;
+        this.totalGasto = totalGasto;
+        this.balance = totalIngreso - totalGasto;
+        this.ahorro = this.balance;
+    }
 
-	}
+    public LocalDate getMes() {
+        return mes;
+    }
 
-	public Rendimiento(double totalIngreso, double totalGasto, double balance) {
-		super();
-		this.transacciones = new ArrayList<Transaccion>();
-		this.totalIngreso = totalIngreso;
-		this.totalGasto = totalGasto;
-		this.balance = balance;
-	}
+    public double getTotalIngreso() {
+        return totalIngreso;
+    }
 
-	// Método para calcular totales para un mes y año dados
+    public double getTotalGasto() {
+        return totalGasto;
+    }
 
-	public void calcularTotalIngreso() {
-		int mes = obtenerMesActual();
-		int anio = obtenerAnioActual();
+    public double getBalance() {
+        return balance;
+    }
 
-		for (Transaccion transaccion : transacciones) {
-			String fechaTransaccionStr = transaccion.getFecha(); 
-			String[] partesFechaTransaccion = fechaTransaccionStr.split("/");
+    public double getAhorro() {
+        return ahorro;
+    }
 
-			// Verificar si el formato de fecha es correcto (día/mes/año)
-			if (partesFechaTransaccion.length == 3) {
-				int mesTransaccion = Integer.parseInt(partesFechaTransaccion[1]);
-				int anioTransaccion = Integer.parseInt(partesFechaTransaccion[2]);
+    public List<Transaccion> getTransacciones() {
+        return transacciones;
+    }
 
+    public void setTransacciones(List<Transaccion> transacciones) {
+        this.transacciones = transacciones;
+    }
 
-				// *** FILTRADO POR MES Y AÑO ***
-				if (mesTransaccion == mes && anioTransaccion == anio) {
-					if (transaccion.getEsIngreso() == 1) {
-						totalIngreso += transaccion.getMonto();
-					}
-				}
-			}
-		}
-
-		//return totalIngreso;
-	}
-
-	
-	public void calcularTotalGasto() {
-		int mes = obtenerMesActual();
-		int anio = obtenerAnioActual();
-
-		for (Transaccion transaccion : transacciones) {
-			String fechaTransaccionStr = transaccion.getFecha(); 
-			String[] partesFechaTransaccion = fechaTransaccionStr.split("/");
-
-			// Verificar si el formato de fecha es correcto (día/mes/año)
-			if (partesFechaTransaccion.length == 3) {
-				int mesTransaccion = Integer.parseInt(partesFechaTransaccion[1]);
-				int anioTransaccion = Integer.parseInt(partesFechaTransaccion[2]);
-
-
-				// *** FILTRADO POR MES Y AÑO ***
-				if (mesTransaccion == mes && anioTransaccion == anio) {
-					if (transaccion.getEsIngreso() == 0) {
-						totalGasto += transaccion.getMonto();
-					}
-				}
-			}
-		}
-
-		//return totalGasto;
-	}
-
-	
-	
-	// Métodos auxiliares para obtener mes y año actuales
-	private int obtenerMesActual() {
-		return LocalDate.now().getMonthValue();
-	}
-
-	private int obtenerAnioActual() {
-		return LocalDate.now().getYear();
-	}
-
-
-
-	public double getTotalIngreso() {
-		//totalIngreso = calcularTotalIngreso(); 
-		return totalIngreso;
-	}
-
-
-	public double getTotalGasto() {
-		//totalGasto = calcularTotalGasto();
-		return totalGasto;
-	}
-
-
-
-	public double getBalance() {
-		return balance;
-	}
-
-
-
-
-
-
+    public void setMes(LocalDate mes) {
+        this.mes = mes.withDayOfMonth(1);
+    }
 }
-

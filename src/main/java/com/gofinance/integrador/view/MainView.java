@@ -16,7 +16,8 @@ public class MainView extends JFrame {
     private JPanel contentPanel;
 
     private JLabel userName;
-    private JLabel userEmail;  // Se mantiene declarada, pero no se añade al panel
+    @SuppressWarnings("unused")
+	private JLabel userEmail;  // Se mantiene declarada, pero no se añade al panel
 
     private JButton btnDashboard;
     private JButton btnIngresos;

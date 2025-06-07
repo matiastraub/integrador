@@ -22,10 +22,14 @@ public class AppControlador implements ActionListener {
 
     // Controladores Específicos - aquí los guardamos como atributos
     private DashboardControlador dashboardControlador;
-    private IngresosControlador ingresosControlador;
-    private GastosControlador gastosControlador;
-    private AjustesControlador ajustesControlador;
-
+    @SuppressWarnings("unused")
+	private IngresosControlador ingresosControlador;
+    @SuppressWarnings("unused")
+	private GastosControlador gastosControlador;
+    @SuppressWarnings("unused")
+	private AjustesControlador ajustesControlador;
+    @SuppressWarnings("unused")
+	private RendimientoControlador rendimientoControlador;
     private int intentos;
 
     public AppControlador(LoginView lv, SignupView sv) {
@@ -166,6 +170,9 @@ public class AppControlador implements ActionListener {
             ingresosControlador = new IngresosControlador(mainView.getIngresosView(), usuario);
             gastosControlador = new GastosControlador(mainView.getGastosView(), usuario);
             ajustesControlador = new AjustesControlador(mainView.getAjustesView(), usuario);
+         // Al pulsar el botón de Rendimiento en AppControlador:
+            rendimientoControlador = new RendimientoControlador(mainView.getRendimientoView(), usuario.getId());
+
         }
     }
 

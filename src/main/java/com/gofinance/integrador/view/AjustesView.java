@@ -18,6 +18,7 @@ import com.gofinance.integrador.model.Usuario;
 
 import raven.datetime.DatePicker;
 
+@SuppressWarnings("serial")
 public class AjustesView extends JPanel {
     public Usuario usuario;
     private JLabel lblNombre;
@@ -66,7 +67,8 @@ public class AjustesView extends JPanel {
     final int MIN_LENGTH_FIELDS = 200;
     final int START_HEIGHT_Y = 40;
     Color COLOR_GREY = new Color(161, 146, 146);
-    Color COLOR_GREEN = new Color(0, 224, 131);
+    Color COLOR_GREEN = new Color(46, 204, 113);
+    Color COLOR_AMBAR = new Color(243, 156, 18);
 
     public AjustesView() {
         System.out.println("AjustesView creada");
@@ -129,8 +131,6 @@ public class AjustesView extends JPanel {
         createBtnFechaNac();
 
         createPasswordSection();
-
-        // =================== BOTONES ===================
 
         crearBotones();
         panel.setVisible(true);
@@ -220,7 +220,7 @@ public class AjustesView extends JPanel {
         btnEditar.setBounds(START_LABEL_X, START_HEIGHT_Y + 40 * (camposTexto.length
                 + 6), 100, MIN_HEIGHT);
         btnEditar.setEnabled(true); // Deshabilitado por defecto
-        btnEditar.setBackground(COLOR_GREEN);
+        btnEditar.setBackground(COLOR_AMBAR);
         btnEditar.setFont(new Font("Tahoma", Font.BOLD, 14));
 
         btnEditar.setForeground(Color.WHITE);
@@ -243,7 +243,7 @@ public class AjustesView extends JPanel {
         btnAceptar.setBounds(START_LABEL_X + 110, START_HEIGHT_Y + 40 * (camposTexto.length + 6), 100, MIN_HEIGHT);
         btnAceptar.setEnabled(true); // Deshabilitado por defecto
 
-        btnAceptar.setBackground(Color.RED);
+        btnAceptar.setBackground(COLOR_GREEN);
         btnAceptar.setForeground(Color.WHITE);
         btnAceptar.setFont(new Font("Tahoma", Font.BOLD, 14));
         // btnAceptar.addActionListener(e -> clickBtnAceptar(e));
@@ -265,9 +265,9 @@ public class AjustesView extends JPanel {
         btnEditar.setVisible(false);
         hacerTextoEditable();
         btnSeleccionarFecha.setEnabled(true);
-        btnSeleccionarFecha.setBackground(Color.BLUE); // Habilitar el botón de selección de fecha
+        btnSeleccionarFecha.setBackground(new Color(60, 63, 206)); // Habilitar el botón de selección de fecha
         btnCambiarPassword.setEnabled(true);
-        btnCambiarPassword.setBackground(Color.BLUE); // Habilitar el botón de cambiar contraseña
+        btnCambiarPassword.setBackground(new Color(60, 63, 206)); // Habilitar el botón de cambiar contraseña
     }
 
     public boolean getIsOpenPasswordField() {

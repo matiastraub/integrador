@@ -6,7 +6,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.gofinance.integrador.model.Transaccion;
 
@@ -251,4 +253,96 @@ public class TransaccionDAO {
         }
         return id;
     }
+    // Agrupa y suma gastos por categoría para un mes/año dado
+    /**
+     * Agrupa y suma gastos por categoría para un mes/año dado,
+     * extrayendo año y mes de la cadena 'dd/MM/yyyy'.
+     * Ahora con LEFT JOIN y COALESCE para que no se pierda ningún gasto.
+     */
+    public static Map<String, Double> getGastosPorCategoriaPorMes(
+            int idUsuario, int anio, int mes) {
+
+        String sql =
+          "SELECT " +
+          "  COALESCE(c.nombre, '(Sin categoría)') AS categoria, " +
+          "  IFNULL(SUM(t.monto),0) AS total " +
+          "FROM transaccion t " +
+          "  LEFT JOIN categoria c ON t.fkcategoria = c.id " +
+          "WHERE t.fkusuario = ? " +
+          "  AND t.es_ingreso = 0 " +
+          "  AND substr(t.fecha,7,4) = ? " +
+          "  AND substr(t.fecha,4,2) = ? " +
+          "GROUP BY categoria";
+
+        Map<String, Double> resultado = new LinkedHashMap<>();
+        try (Connection conn = DatabaseManager.connect();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt   (1, idUsuario);
+            ps.setString(2, String.valueOf(anio));
+            ps.setString(3, String.format("%02d", mes));
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    resultado.put(
+                        rs.getString("categoria"),
+                        rs.getDouble("total")
+                    );
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return resultado;
+    }
+
+
+
+    //Suma todos los ingresos (es_ingreso = 1) de un usuario en un mes y año dados.
+    public static double getTotalIngresoPorMes(int idUsuario, int anio, int mes) {
+        String sql =
+          "SELECT IFNULL(SUM(monto),0) AS total " +
+          "FROM transaccion " +
+          "WHERE fkusuario = ? " +
+          "  AND es_ingreso = 1 " +
+          "  AND substr(fecha,7,4) = ? " +   // año: empieza en pos-7, largo 4
+          "  AND substr(fecha,4,2) = ?";      // mes: empieza en pos-4, largo 2
+        try (Connection conn = DatabaseManager.connect();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt   (1, idUsuario);
+            ps.setString(2, String.valueOf(anio));
+            ps.setString(3, String.format("%02d", mes));
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) return rs.getDouble("total");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
+
+
+    //Suma todos los gastos (es_ingreso = 0) de un usuario en un mes y año dados.
+    public static double getTotalGastoPorMes(int idUsuario, int anio, int mes) {
+        String sql =
+          "SELECT IFNULL(SUM(monto),0) AS total " +
+          "FROM transaccion " +
+          "WHERE fkusuario = ? " +
+          "  AND es_ingreso = 0 " +
+          "  AND substr(fecha,7,4) = ? " +
+          "  AND substr(fecha,4,2) = ?";
+        try (Connection conn = DatabaseManager.connect();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt   (1, idUsuario);
+            ps.setString(2, String.valueOf(anio));
+            ps.setString(3, String.format("%02d", mes));
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) return rs.getDouble("total");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
+
 }

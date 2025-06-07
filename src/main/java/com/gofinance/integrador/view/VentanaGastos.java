@@ -42,7 +42,7 @@ public class VentanaGastos extends JPanel {
         // Botón Eliminar fila
         btnEliminarSeleccionada = new JButton("Eliminar fila seleccionada");
         btnEliminarSeleccionada.setFont(new Font("Arial", Font.BOLD, 16));
-        btnEliminarSeleccionada.setBackground(Color.RED);
+        btnEliminarSeleccionada.setBackground(new Color(46, 204, 113));
         btnEliminarSeleccionada.setForeground(Color.WHITE);
         btnEliminarSeleccionada.setBounds(439, 286, 311, 30);
         btnEliminarSeleccionada.addActionListener(new ActionListener() {
@@ -105,7 +105,7 @@ public class VentanaGastos extends JPanel {
         // Botón Registrar
         btnRegistrar = new JButton("Registrar");
         btnRegistrar.setBounds(50, 286, 371, 30);
-        btnRegistrar.setBackground(new Color(0, 224, 131));
+        btnRegistrar.setBackground(new Color(231, 76, 60));
         btnRegistrar.setForeground(Color.WHITE);
         btnRegistrar.setFont(new Font("Arial", Font.BOLD, 16));
         btnRegistrar.addActionListener(new ActionListener() {
@@ -115,7 +115,7 @@ public class VentanaGastos extends JPanel {
         });
         add(btnRegistrar);
 
-        // Botón Añadir → llama al controlador (sin tocar DAO)
+        // Botón Añadir llama al controlador (sin tocar DAO)
         btnAniadir.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 String fecha = ((JSpinner.DateEditor) datePicker.getEditor()).getFormat().format(datePicker.getValue());
