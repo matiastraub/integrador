@@ -5,6 +5,7 @@ import com.gofinance.integrador.model.Rendimiento;
 import com.gofinance.integrador.model.Transaccion;
 import com.gofinance.integrador.database.TransaccionDAO;
 
+import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.time.LocalDate;
@@ -13,10 +14,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.LinkedHashMap;
 
-/**
- * Controlador para RendView, orquesta la selección de mes,
- * el cálculo de totales y la agrupación manual de gastos por categoría.
- */
 public class RendimientoControlador {
     private RendView view;
     private int idUsuario;
@@ -34,7 +31,7 @@ public class RendimientoControlador {
         inicializarListeners();
     }
 
-    /** Poblamos el combo y seleccionamos el mes actual */
+    // Poblamos el combo y seleccionamos el mes actual */
     private void inicializarVista() {
         for (String mes : MESES_ES) {
             view.getComboMes().addItem(mes);
@@ -44,7 +41,7 @@ public class RendimientoControlador {
         refrescarDatos(idxActual);
     }
 
-    /** Instalamos el listener para reaccionar al cambio de mes */
+    // Instalamos el listener para reaccionar al cambio de mes
     private void inicializarListeners() {
         view.getComboMes().addActionListener(new ActionListener() {
             @Override
@@ -100,5 +97,9 @@ public class RendimientoControlador {
         view.setBalanceText( "Balance de " + MESES_ES[mesIdx] + ":" );
         view.updateValues(   model );
         view.updateChart(    gastosPorCategoria );
+     // Añadimos el color del saldo
+        double balance = model.getBalance();
+        Color color = balance >= 0 ? new Color(46, 204, 113) : new Color(231, 76, 60);
+        view.setColorSaldoActual(color);
     }
 }

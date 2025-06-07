@@ -2,15 +2,14 @@ package com.gofinance.integrador.view;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
+
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.util.Map;
 import com.gofinance.integrador.model.Rendimiento;
 
-/**
- * Vista para mostrar el rendimiento mensual:
- * el controlador es quien puebla TODO (título, combo, valores y tabla).
- */
+//Vista para mostrar el rendimiento mensual:
 @SuppressWarnings("serial")
 public class RendView extends JPanel {
 
@@ -62,6 +61,7 @@ public class RendView extends JPanel {
 
         lblIngresoValue = new JLabel("");
         lblIngresoValue.setFont(new Font("Tahoma", Font.PLAIN, 12));
+        lblIngresoValue.setForeground(new Color(46, 204, 113));
         lblIngresoValue.setBounds(150, 90, 100, 22);
         add(lblIngresoValue);
 
@@ -72,6 +72,7 @@ public class RendView extends JPanel {
 
         lblGastoValue = new JLabel("");
         lblGastoValue.setFont(new Font("Tahoma", Font.PLAIN, 12));
+        lblGastoValue.setForeground(new Color(231, 76, 60));
         lblGastoValue.setBounds(150, 120, 100, 22);
         add(lblGastoValue);
 
@@ -96,35 +97,30 @@ public class RendView extends JPanel {
         add(scroll);
     }
 
-    /** Permite al controlador poblar el combo e instalar el listener */
+    // Permite al controlador poblar el combo e instalar el listener 
     public JComboBox<String> getComboMes() {
         return comboMes;
     }
 
-    /** El controlador manda el texto completo (p.ej. "Rendimiento mensual de Abril") */
+    // El controlador manda el texto completo (p.ej. "Rendimiento mensual de Abril") 
     public void setMonthTitle(String tituloCompleto) {
         lblTitulo.setText(tituloCompleto);
     }
 
-    /** El controlador fija aquí el texto de balance, p.ej. "Balance de Abril:" */
+    // El controlador fija aquí el texto de balance, p.ej. "Balance de Abril:"
     public void setBalanceText(String texto) {
         lblBalanceText.setText(texto);
     }
 
-    /**
-     * Actualiza los valores numéricos del modelo.
-     * @param r modelo con balance, ingreso y gasto ya calculados
-     */
+   
+    //Actualiza los valores numéricos del modelo.
     public void updateValues(Rendimiento r) {
         lblBalanceValue.setText(format(r.getBalance()));
-        lblIngresoValue .setText(format(r.getTotalIngreso()));
-        lblGastoValue   .setText(format(r.getTotalGasto()));
+        lblIngresoValue.setText(format(r.getTotalIngreso()));
+        lblGastoValue.setText(format(r.getTotalGasto()));
     }
 
-    /**
-     * Rellena la tabla con cada categoría y su importe.
-     * @param gastosPorCategoria mapa nombreCategoría→monto
-     */
+    //Rellena la tabla con cada categoría y su importe.
     public void updateChart(Map<String, Double> gastosPorCategoria) {
         tblModel.setRowCount(0);
         for (Map.Entry<String, Double> e : gastosPorCategoria.entrySet()) {
@@ -139,4 +135,8 @@ public class RendView extends JPanel {
     private String format(double v) {
         return String.format("%.2f €", v);
     }
+    public void setColorSaldoActual(Color color) {
+        lblBalanceValue.setForeground(color);
+    }
+
 }

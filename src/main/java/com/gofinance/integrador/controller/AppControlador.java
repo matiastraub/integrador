@@ -30,6 +30,8 @@ public class AppControlador implements ActionListener {
 	private AjustesControlador ajustesControlador;
     @SuppressWarnings("unused")
 	private RendimientoControlador rendimientoControlador;
+    @SuppressWarnings("unused")
+	private UtilidadesControlador utilidadesControlador;
     private int intentos;
 
     public AppControlador(LoginView lv, SignupView sv) {
@@ -148,7 +150,9 @@ public class AppControlador implements ActionListener {
 
                 } else if (src.equals(mainView.getBtnUtilidades())) {
                     mainView.mostrarVista("Utilidades");
-                    // utilidadesControlador = ...
+                    if (utilidadesControlador != null) {
+                        mainView.getUtilidadesView().refrescarVista();
+                    }
 
                 } else if (src.equals(mainView.getBtnAjustes())) {
                     mainView.mostrarVista("Perfil");
@@ -170,6 +174,10 @@ public class AppControlador implements ActionListener {
             ingresosControlador = new IngresosControlador(mainView.getIngresosView(), usuario);
             gastosControlador = new GastosControlador(mainView.getGastosView(), usuario);
             ajustesControlador = new AjustesControlador(mainView.getAjustesView(), usuario);
+            UtilsView utilsView = new UtilsView(usuario.getId());
+            mainView.setUtilsView(utilsView);
+            utilidadesControlador = new UtilidadesControlador(utilsView, usuario.getId());
+
          // Al pulsar el botón de Rendimiento en AppControlador:
             rendimientoControlador = new RendimientoControlador(mainView.getRendimientoView(), usuario.getId());
 

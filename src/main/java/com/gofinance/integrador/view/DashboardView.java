@@ -19,10 +19,11 @@ public class DashboardView extends JPanel {
     private PieChart pieGastos;
     private JButton btnActualizar;
     private JLabel lblEstado;
-
+    private final Color COLOR_GRIS = new Color(8, 8, 8);
+    
     public DashboardView() {
         setLayout(new MigLayout("wrap, fillx, insets 10", "[fill]", "[]5[]10[]10[]10[]"));
-        setBackground(Color.BLACK);
+        setBackground(COLOR_GRIS);
         crearComponentes();
         configurarEstilos();
     }
@@ -35,7 +36,7 @@ public class DashboardView extends JPanel {
 
     private void crearPanelControl() {
         JPanel ctrl = new JPanel(new MigLayout("insets 0", "[]push[]", "[]"));
-        ctrl.setBackground(Color.BLACK);
+        ctrl.setBackground(COLOR_GRIS);
         lblEstado    = new JLabel("Dashboard cargado");
         btnActualizar = new JButton("Actualizar");
         lblEstado.setForeground(Color.GRAY);
@@ -62,7 +63,7 @@ public class DashboardView extends JPanel {
 
     private void crearPieCharts() {
         JPanel cont = new JPanel(new MigLayout("insets 0, gap 10", "[50%][50%]", "[fill]"));
-        cont.setBackground(Color.BLACK);
+        cont.setBackground(COLOR_GRIS);
 
         // Pie de Ingresos
         pieIngresos = new PieChart();

@@ -42,7 +42,7 @@ public class IngresosView extends JPanel {
         btnRegistrar = new JButton("Registrar");
         btnRegistrar.setFont(new Font("Arial", Font.BOLD, 16));
         btnRegistrar.setBounds(50, 286, 340, 30);
-        btnRegistrar.setBackground(new Color(46, 204, 113));
+        btnRegistrar.setBackground(new Color(46, 204, 113)); //Color verde
         btnRegistrar.setForeground(Color.WHITE);
         btnRegistrar.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {

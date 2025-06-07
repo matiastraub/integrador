@@ -104,7 +104,6 @@ public class MainView extends JFrame {
         ingresosView    = new IngresosView();
         ventanaGastos   = new VentanaGastos();
         rendimientoView = new RendView();
-        utilidadesView  = new UtilsView();
         ajustesView     = new AjustesView();
 
         // Agregar vistas al contentPanel
@@ -112,7 +111,6 @@ public class MainView extends JFrame {
         contentPanel.add(ingresosView,    "Ingresos");
         contentPanel.add(ventanaGastos,   "Gastos");
         contentPanel.add(rendimientoView, "Rendimiento");
-        contentPanel.add(utilidadesView,  "Utilidades");
         contentPanel.add(ajustesView,     "Perfil");
 
         // Añadir al frame
@@ -155,4 +153,10 @@ public class MainView extends JFrame {
     public Usuario getUsuario() {
         return usuario;
     }
+    // Setter para la visita de utilidades
+    public void setUtilsView(UtilsView vista) {
+        this.utilidadesView = vista;
+        contentPanel.add(utilidadesView, "Utilidades");
+    }
+
 }
