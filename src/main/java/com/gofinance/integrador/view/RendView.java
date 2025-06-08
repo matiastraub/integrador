@@ -7,7 +7,10 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.util.Map;
+
+import com.gofinance.integrador.database.RendimientoPersistencia;
 import com.gofinance.integrador.model.Rendimiento;
+import com.gofinance.integrador.model.Usuario;
 
 //Vista para mostrar el rendimiento mensual:
 @SuppressWarnings("serial")
@@ -116,8 +119,17 @@ public class RendView extends JPanel {
     //Actualiza los valores numéricos del modelo.
     public void updateValues(Rendimiento r) {
         lblBalanceValue.setText(format(r.getBalance()));
+        System.out.println(r.getTotalGasto());
         lblIngresoValue.setText(format(r.getTotalIngreso()));
+        System.err.println("Total Gasto: " + r.getTotalGasto());
         lblGastoValue.setText(format(r.getTotalGasto()));
+        System.out.println("Balance: " + r.getBalance());
+    }
+
+    public void cargarGastosEnTabla(Usuario usuario) {
+    RendimientoPersistencia rp = new RendimientoPersistencia();
+    Map<String, Double> datos = rp.obtenerGastosPorCategoria(usuario.getId());
+    updateChart(datos);  
     }
 
     //Rellena la tabla con cada categoría y su importe.

@@ -3,8 +3,9 @@ package com.gofinance.integrador.database;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.util.HashMap;
+import java.util.Map;
 
-import com.gofinance.integrador.model.Transaccion;
 
 public class RendimientoPersistencia {
 
@@ -77,4 +78,36 @@ public class RendimientoPersistencia {
         return totalIngreso;
 }
 
+public Map<String, Double> obtenerGastosPorCategoria(int idUsuario) {
+
+    String query = "SELECT categoria, SUM(monto) FROM transacciones WHERE fkUsuario = ? AND esIngreso = 0 GROUP BY categoria";
+    Connection con = null;
+    PreparedStatement pstmt = null;
+    ResultSet rlst = null;
+      try {
+            con = dbManager.getConnection();
+            pstmt = con.prepareStatement(query);
+            pstmt.setInt(1, idUsuario);
+            rlst = pstmt.executeQuery();
+            Map<String, Double> gastosPorCategoria = new HashMap<>();
+
+
+            while (rlst.next()) {
+                String categoria = rlst.getString("categoria");
+                double totalCategoria = rlst.getDouble("SUM(monto)");
+                gastosPorCategoria.put(categoria, totalCategoria);
+            }
+        }catch (Exception e) {
+            e.printStackTrace();
+             }     finally {
+            try {
+                if (rlst != null) rlst.close();
+                if (pstmt != null) pstmt.close();
+                if (con != null) con.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return gastosPorCategoria;
+    }
 }
