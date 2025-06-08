@@ -1,69 +1,89 @@
+
+
+
 package com.gofinance.integrador.model;
+
 
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.List;
 
-/**
- * Modelo para contener datos de rendimiento mensual: ingresos, gastos, balance y ahorro.
- */
+import com.gofinance.integrador.database.RendimientoPersistencia;
+
 public class Rendimiento {
-    private LocalDate mes;
-    private List<Transaccion> transacciones;
-    private double totalIngreso;
-    private double totalGasto;
-    private double balance;
-    private double ahorro;
 
-    public Rendimiento() {
-        this.mes = LocalDate.now().withDayOfMonth(1);
-        this.transacciones = new ArrayList<>();
-    }
+	private static int id;
 
-    /**
-     * Constructor para datos ya calculados.
-     * @param mes mes de los datos (día=1)
-     * @param totalIngreso suma de ingresos del mes
-     * @param totalGasto suma de gastos del mes
-     */
-    public Rendimiento(LocalDate mes, double totalIngreso, double totalGasto) {
-        this.mes = mes.withDayOfMonth(1);
-        this.transacciones = new ArrayList<>();
-        this.totalIngreso = totalIngreso;
-        this.totalGasto = totalGasto;
-        this.balance = totalIngreso - totalGasto;
-        this.ahorro = this.balance;
-    }
+	private ArrayList<Transaccion> transacciones;
+	private double totalIngreso; 
+	private double totalGasto;  
+	private double balance;
+	private Usuario usuario;     
 
-    public LocalDate getMes() {
-        return mes;
-    }
+	public Rendimiento() {
 
-    public double getTotalIngreso() {
-        return totalIngreso;
-    }
+	}
 
-    public double getTotalGasto() {
-        return totalGasto;
-    }
+	public Rendimiento(double totalIngreso, double totalGasto, double balance , Usuario usuario) {
+		super();
+		this.transacciones = new ArrayList<Transaccion>();
+		this.totalIngreso = totalIngreso;
+		this.totalGasto = totalGasto;
+		this.balance = balance;
+ 		this.usuario = usuario;	}
 
-    public double getBalance() {
-        return balance;
-    }
+	// Método para calcular totales para un mes y año dados
 
-    public double getAhorro() {
-        return ahorro;
-    }
+	public void calcularTotalIngreso() {
 
-    public List<Transaccion> getTransacciones() {
-        return transacciones;
-    }
+		RendimientoPersistencia rendimientoPersistencia = new RendimientoPersistencia();
+		totalIngreso = rendimientoPersistencia.obtenerTotalIngresos(usuario.getId()); 
+	}
 
-    public void setTransacciones(List<Transaccion> transacciones) {
-        this.transacciones = transacciones;
-    }
+	
+	public void calcularTotalGasto() {
+		RendimientoPersistencia rendimientoPersistencia = new RendimientoPersistencia();
 
-    public void setMes(LocalDate mes) {
-        this.mes = mes.withDayOfMonth(1);
-    }
+		totalGasto = rendimientoPersistencia.ObtenerTotalGastos(usuario.getId());
+	}
+
+	public void calcularBalance() {
+		calcularTotalIngreso();
+		calcularTotalGasto();
+		balance = totalIngreso - totalGasto;
+	}
+	
+	// Métodos auxiliares para obtener mes y año actuales
+	private int obtenerMesActual() {
+		return LocalDate.now().getMonthValue();
+	}
+
+	private int obtenerAnioActual() {
+		return LocalDate.now().getYear();
+	}
+
+
+
+	public double getTotalIngreso() {
+		//totalIngreso = calcularTotalIngreso(); 
+		return totalIngreso;
+	}
+
+
+	public double getTotalGasto() {
+		//totalGasto = calcularTotalGasto();
+		return totalGasto;
+	}
+
+
+
+	public double getBalance() {
+		return balance;
+	}
+
+
+
+
+
+
 }
+
