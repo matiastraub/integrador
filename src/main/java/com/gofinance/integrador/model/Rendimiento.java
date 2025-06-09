@@ -19,7 +19,7 @@ public class Rendimiento {
 	private double balance;
 	private Usuario usuario;     
 
-	public Rendimiento() {
+	public Rendimiento(LocalDate localDate, double ingreso, double gasto) {
 
 	}
 

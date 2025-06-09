@@ -108,6 +108,6 @@ public Map<String, Double> obtenerGastosPorCategoria(int idUsuario) {
                 e.printStackTrace();
             }
         }
-        return gastosPorCategoria;
+        return obtenerGastosPorCategoria(0);
     }
 }
