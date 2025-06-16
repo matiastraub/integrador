@@ -1,6 +1,7 @@
 # goFinance
 
-**goFinance** es una aplicación de escritorio realizada sólo como proyecto de Universidad (y no aplicación real, por lo cual no cuenta con mecanismos avanzados de encriptación de password, y otras carcterísticas) en Java desarrollada con Swing que permite llevar un control financiero personal. Los usuarios pueden registrar ingresos y gastos, así como visualizar y gestionar su presupuesto de manera intuitiva.
+**goFinance** es una aplicación de escritorio realizada sólo como proyecto de Universidad (y no aplicación real, por lo cual no cuenta con mecanismos avanzados de encriptación de password, y otras características reales)
+Está desarrollada en Java con Swing que permite y su objectivo es llevar un control financiero personal. Los usuarios pueden registrar ingresos y gastos, así como visualizar y gestionar su presupuesto de manera intuitiva.
 
 ## Estructura del proyecto
 
