@@ -10,6 +10,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Date;
 
+@SuppressWarnings("serial")
 public class IngresosView extends JPanel {
 
     private JTable tablaIngresos;
@@ -41,7 +42,7 @@ public class IngresosView extends JPanel {
         btnRegistrar = new JButton("Registrar");
         btnRegistrar.setFont(new Font("Arial", Font.BOLD, 16));
         btnRegistrar.setBounds(50, 286, 340, 30);
-        btnRegistrar.setBackground(new Color(0, 224, 131));
+        btnRegistrar.setBackground(new Color(46, 204, 113)); //Color verde
         btnRegistrar.setForeground(Color.WHITE);
         btnRegistrar.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -54,7 +55,7 @@ public class IngresosView extends JPanel {
         btnEliminar = new JButton("Eliminar fila seleccionada");
         btnEliminar.setFont(new Font("Arial", Font.BOLD, 16));
         btnEliminar.setBounds(410, 286, 340, 30);
-        btnEliminar.setBackground(Color.RED);
+        btnEliminar.setBackground(new Color(231, 76, 60)); //Color rojo claro 
         btnEliminar.setForeground(Color.WHITE);
         btnEliminar.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {

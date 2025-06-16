@@ -1,84 +1,56 @@
+
+
+
 package com.gofinance.integrador.model;
 
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 
+import com.gofinance.integrador.database.RendimientoPersistencia;
+
 public class Rendimiento {
+
+	private static int id;
 
 	private ArrayList<Transaccion> transacciones;
 	private double totalIngreso; 
 	private double totalGasto;  
-	private double balance;     
+	private double balance;
+	private Usuario usuario;     
 
-	public Rendimiento() {
+	public Rendimiento(LocalDate localDate, double ingreso, double gasto) {
 
 	}
 
-	public Rendimiento(double totalIngreso, double totalGasto, double balance) {
+	public Rendimiento(double totalIngreso, double totalGasto, double balance , Usuario usuario) {
 		super();
 		this.transacciones = new ArrayList<Transaccion>();
 		this.totalIngreso = totalIngreso;
 		this.totalGasto = totalGasto;
 		this.balance = balance;
-	}
+ 		this.usuario = usuario;	}
 
 	// Método para calcular totales para un mes y año dados
 
 	public void calcularTotalIngreso() {
-		int mes = obtenerMesActual();
-		int anio = obtenerAnioActual();
 
-		for (Transaccion transaccion : transacciones) {
-			String fechaTransaccionStr = transaccion.getFecha(); 
-			String[] partesFechaTransaccion = fechaTransaccionStr.split("/");
-
-			// Verificar si el formato de fecha es correcto (día/mes/año)
-			if (partesFechaTransaccion.length == 3) {
-				int mesTransaccion = Integer.parseInt(partesFechaTransaccion[1]);
-				int anioTransaccion = Integer.parseInt(partesFechaTransaccion[2]);
-
-
-				// *** FILTRADO POR MES Y AÑO ***
-				if (mesTransaccion == mes && anioTransaccion == anio) {
-					if (transaccion.getEsIngreso() == 1) {
-						totalIngreso += transaccion.getMonto();
-					}
-				}
-			}
-		}
-
-		//return totalIngreso;
+		RendimientoPersistencia rendimientoPersistencia = new RendimientoPersistencia();
+		totalIngreso = rendimientoPersistencia.obtenerTotalIngresos(usuario.getId()); 
 	}
 
 	
 	public void calcularTotalGasto() {
-		int mes = obtenerMesActual();
-		int anio = obtenerAnioActual();
+		RendimientoPersistencia rendimientoPersistencia = new RendimientoPersistencia();
 
-		for (Transaccion transaccion : transacciones) {
-			String fechaTransaccionStr = transaccion.getFecha(); 
-			String[] partesFechaTransaccion = fechaTransaccionStr.split("/");
-
-			// Verificar si el formato de fecha es correcto (día/mes/año)
-			if (partesFechaTransaccion.length == 3) {
-				int mesTransaccion = Integer.parseInt(partesFechaTransaccion[1]);
-				int anioTransaccion = Integer.parseInt(partesFechaTransaccion[2]);
-
-
-				// *** FILTRADO POR MES Y AÑO ***
-				if (mesTransaccion == mes && anioTransaccion == anio) {
-					if (transaccion.getEsIngreso() == 0) {
-						totalGasto += transaccion.getMonto();
-					}
-				}
-			}
-		}
-
-		//return totalGasto;
+		totalGasto = rendimientoPersistencia.ObtenerTotalGastos(usuario.getId());
 	}
 
-	
+	public void calcularBalance() {
+		calcularTotalIngreso();
+		calcularTotalGasto();
+		balance = totalIngreso - totalGasto;
+	}
 	
 	// Métodos auxiliares para obtener mes y año actuales
 	private int obtenerMesActual() {

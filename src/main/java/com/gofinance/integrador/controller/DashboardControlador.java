@@ -7,6 +7,7 @@ import com.gofinance.integrador.view.DashboardView;
 import raven.chart.data.category.DefaultCategoryDataset;
 import raven.chart.data.pie.DefaultPieDataset;
 
+import javax.swing.SwingUtilities;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.text.ParseException;
@@ -19,8 +20,9 @@ public class DashboardControlador {
     private Usuario usuario;
 
     public DashboardControlador(DashboardView vista, Usuario usuario) {
-        this.vista   = vista;
+        this.vista = vista;
         this.usuario = usuario;
+        
         // Listener sin lambdas
         this.vista.getBtnActualizar().addActionListener(new ActionListener() {
             @Override
@@ -28,22 +30,34 @@ public class DashboardControlador {
                 actualizarDatos();
             }
         });
+        
+        // Cargar datos iniciales
         cargarDatos();
     }
 
     public void cargarDatos() {
+        // Ejecutar la carga de datos en un hilo separado para evitar bloqueos
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                cargarDatosInterno();
+            }
+        });
+    }
+    
+    private void cargarDatosInterno() {
         List<Transaccion> lista = TransaccionDAO.getTransaccionesPorUsuario(usuario.getId());
 
-        // 1) Preparar datasets
-        DefaultCategoryDataset<String, String> datasetLinea      = new DefaultCategoryDataset<>();
-        DefaultPieDataset<String>              datasetPieIngresos = new DefaultPieDataset<>();
-        DefaultPieDataset<String>              datasetPieGastos   = new DefaultPieDataset<>();
+        // 1) Preparar datasets - Crear nuevos datasets cada vez
+        DefaultCategoryDataset<String, String> datasetLinea = new DefaultCategoryDataset<>();
+        DefaultPieDataset<String> datasetPieIngresos = new DefaultPieDataset<>();
+        DefaultPieDataset<String> datasetPieGastos = new DefaultPieDataset<>();
 
         SimpleDateFormat formato = new SimpleDateFormat("dd/MM/yyyy");
 
         // 2) Acumular en mapas por fecha
         Map<String, Double> ingresosPorFecha = new HashMap<>();
-        Map<String, Double> gastosPorFecha   = new HashMap<>();
+        Map<String, Double> gastosPorFecha = new HashMap<>();
 
         for (Transaccion t : lista) {
             String fecha = t.getFecha();
@@ -75,12 +89,12 @@ public class DashboardControlador {
             double ing = ingresosPorFecha.getOrDefault(clave, 0.0);
             double gas = gastosPorFecha.getOrDefault(clave, 0.0);
             datasetLinea.addValue(ing, "Ingresos", clave);
-            datasetLinea.addValue(gas,   "Gastos",   clave);
+            datasetLinea.addValue(gas, "Gastos", clave);
         }
 
         // 5) Acumular totales por categoría usando los mapas estáticos
         Map<Integer, Double> ingresosPorCategoria = new HashMap<>();
-        Map<Integer, Double> gastosPorCategoria   = new HashMap<>();
+        Map<Integer, Double> gastosPorCategoria = new HashMap<>();
 
         for (Transaccion t : lista) {
             int catId = t.getFkCategoria();
@@ -98,7 +112,7 @@ public class DashboardControlador {
             int id = CategoriaControlador.getIdCategoriaIngreso(nombre);
             double total = ingresosPorCategoria.getOrDefault(id, 0.0);
             if (total > 0.0) {
-            	datasetPieIngresos.setValue(nombre, total);
+                datasetPieIngresos.setValue(nombre, total);
             }
         }
 
@@ -107,7 +121,7 @@ public class DashboardControlador {
             int id = CategoriaControlador.getIdCategoriaGasto(nombre);
             double total = gastosPorCategoria.getOrDefault(id, 0.0);
             if (total > 0.0) {
-            	datasetPieGastos.setValue(nombre, total);
+                datasetPieGastos.setValue(nombre, total);
             }
         }
 
@@ -115,7 +129,7 @@ public class DashboardControlador {
         if (lista.isEmpty()) {
             String hoy = formato.format(new Date());
             datasetLinea.addValue(0.0, "Ingresos", hoy);
-            datasetLinea.addValue(0.0, "Gastos",   hoy);
+            datasetLinea.addValue(0.0, "Gastos", hoy);
         }
         if (datasetPieIngresos.getItemCount() == 0) {
             datasetPieIngresos.setValue("Sin datos", 1.0);
@@ -124,15 +138,30 @@ public class DashboardControlador {
             datasetPieGastos.setValue("Sin datos", 1.0);
         }
 
-        // 9) Enviar a la vista
-        vista.mostrarDatos(datasetLinea, datasetPieIngresos, datasetPieGastos);
+        // 9) Enviar a la vista - FORZAR actualización en EDT
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                vista.mostrarDatos(datasetLinea, datasetPieIngresos, datasetPieGastos);
+                
+                // Forzar repaint de los componentes
+                vista.getLineChart().repaint();
+                vista.getPieIngresosChart().repaint();
+                vista.getPieGastosChart().repaint();
+                vista.revalidate();
+                vista.repaint();
+            }
+        });
     }
 
     public void actualizarDatos() {
+    	vista.getLineChart().setCategoryDataset(new DefaultCategoryDataset<>());
+    	vista.getPieIngresosChart().setDataset(new DefaultPieDataset<>());
+    	vista.getPieGastosChart().setDataset(new DefaultPieDataset<>());
         cargarDatos();
     }
 
     // Getters MVC
-    public Usuario       getUsuario() { return usuario; }
-    public DashboardView getVista()   { return vista;   }
+    public Usuario getUsuario() { return usuario; }
+    public DashboardView getVista() { return vista; }
 }
